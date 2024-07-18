@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TIC-TAC-TOE</string>
+    <string name="join">Join</string>
+    <string name="host">Host</string>
+</resources>
