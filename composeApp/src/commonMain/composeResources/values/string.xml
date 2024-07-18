@@ -2,4 +2,7 @@
     <string name="app_name">TIC-TAC-TOE</string>
     <string name="join">Join</string>
     <string name="host">Host</string>
+    <string name="enter_code">Enter code</string>
+    <string name="scan_qr">Scan QR</string>
+    <string name="quit">Quit</string>
 </resources>
