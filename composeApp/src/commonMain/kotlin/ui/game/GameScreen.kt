@@ -1,11 +1,16 @@
 package ui.game
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +47,7 @@ fun GameScreen() {
                 modifier = Modifier.padding(top = 24.dp),
                 turnInfo = "Player 1’s Turn"
             )
-            GameGrid(Field)
+            GameGrid(Field.flatten(), Field.size)
         }
     }
     
@@ -84,40 +89,25 @@ private fun TurnInfo(
 
 @Composable
 private fun GameGrid(
-    cells: List<List<Cell>>
+    cells: List<Cell>,
+    columns: Int
 ) {
     Surface(
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)
     ) {
-        LazyColumn(
-            modifier = Modifier.padding(28.dp).fillMaxWidth()
+        LazyVerticalGrid(
+            modifier = Modifier.padding(28.dp).fillMaxWidth(),
+            columns = GridCells.Fixed(columns)
         ) {
             items(cells.size) { index ->
-                GameRow(
-                    cells = cells[index],
-                    onClicked = {}
+                CellItem(
+                    cell = cells[index],
+                    index = index,
+                    onClicked = {index -> },
+                    showHorizontalDivider = index / columns < columns - 1,
+                    showVerticalDivider =  (index + 1) % columns != 0,
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun GameRow(
-    cells: List<Cell>,
-    onClicked: (Cell) -> Unit
-) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        val modifier = Modifier.weight(1f)
-        items(cells.size) { index ->
-            CellItem(
-                cell = cells[index],
-            )
-            if (index < cells.size - 1) {
-                VerticalDivider(color = Grey)
             }
         }
     }
@@ -126,12 +116,34 @@ private fun GameRow(
 @Composable
 private fun CellItem(
     cell: Cell,
+    index: Int,
+    showVerticalDivider: Boolean,
+    showHorizontalDivider: Boolean,
+    onClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (cell.type) {
-        CellType.Nought -> CellImage(Res.drawable.ic_nought, modifier)
-        CellType.Cross -> CellImage(Res.drawable.ic_cross, modifier)
-        null -> Spacer(modifier)
+    Column {
+        Row(
+            modifier = Modifier.height(90.dp)
+        ) {
+            when (cell.type) {
+                CellType.Nought -> CellImage(Res.drawable.ic_nought, modifier)
+                CellType.Cross -> CellImage(Res.drawable.ic_cross, modifier)
+                null -> Box(modifier = modifier.weight(1f)) {}
+            }
+            if (showVerticalDivider) {
+                VerticalDivider(
+                    modifier = Modifier.fillMaxHeight(),
+                    color = Grey
+                )
+            }
+        }
+        if (showHorizontalDivider) {
+            Divider(
+                color = Grey,
+                modifier = Modifier
+            )
+        }
     }
 }
 

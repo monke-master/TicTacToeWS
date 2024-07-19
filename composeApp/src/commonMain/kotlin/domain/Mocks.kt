@@ -1,5 +1,5 @@
 package domain
 
-private val row = listOf(Cell(CellType.Nought), Cell(null), Cell(CellType.Cross))
+private val row = listOf(Cell(CellType.Cross), Cell(null), Cell(null))
 
 val Field = listOf(row, row, row)
