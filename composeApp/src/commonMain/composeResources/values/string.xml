@@ -3,6 +3,7 @@
     <string name="join">Join</string>
     <string name="host">Host</string>
     <string name="enter_code">Enter code</string>
-    <string name="scan_qr">Scan QR</string>
+    <string name="scan_qr">Or scan QR</string>
     <string name="quit">Quit</string>
+    <string name="tell_the_code">Tell the code</string>
 </resources>
