@@ -15,6 +15,9 @@ junit = "4.13.2"
 kotlin = "2.0.0"
 ktor = "2.3.12"
 logging = "1.5.0"
+kviewmodel = "0.14"
+odysseyCore = "1.3.61"
+koinVersion = "3.3.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -37,9 +40,20 @@ ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-conte
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
 logging = { module = "org.lighthousegames:logging", version.ref = "logging" }
 
+kviewmodel-core = { module = "com.adeo:kviewmodel", version.ref = "kviewmodel" }
+kviewmodel-compose = { module = "com.adeo:kviewmodel-compose", version.ref = "kviewmodel" }
+kviewmodel-odyssey = { module = "com.adeo:kviewmodel-odyssey", version.ref = "kviewmodel" }
+
+odyssey-compose = { module = "io.github.alexgladkov:odyssey-compose", version.ref = "odysseyCore" }
+odyssey-core = { module = "io.github.alexgladkov:odyssey-core", version.ref = "odysseyCore" }
+
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
+
 [bundles]
 ktor-common = ["ktor-client-core", "ktor-client-serialization", "ktor-client-content-negotiation",
     "ktor-client-logging", "ktor-client-ws"]
+kviewmodel = ["kviewmodel-odyssey", "kviewmodel-core", "kviewmodel-compose"]
+odyssey = ["odyssey-core", "odyssey-compose"]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

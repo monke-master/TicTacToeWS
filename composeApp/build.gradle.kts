@@ -40,6 +40,10 @@ kotlin {
 
             implementation(libs.bundles.ktor.common)
             implementation(libs.logging)
+
+            implementation(libs.bundles.odyssey)
+            implementation(libs.bundles.kviewmodel)
+            implementation(libs.koin.core)
         }
 
         androidMain.dependencies {
