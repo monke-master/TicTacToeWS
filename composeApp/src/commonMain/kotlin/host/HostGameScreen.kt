@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
 import ui.composable.DefaultBackground
 import ui.composable.TextButton
@@ -21,6 +22,7 @@ import ui.theme.Green
 
 @Composable
 fun HostGameScreen() {
+    val rootController = LocalRootController.current
     DefaultBackground {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -53,8 +55,10 @@ fun HostGameScreen() {
                 modifier = Modifier
                                 .width(225.dp)
                                 .padding(bottom = 32.dp),
-                text = stringResource(Res.string.quit)
-            ) {}
+                text = stringResource(Res.string.quit),
+                onClick = {
+                    rootController.popBackStack()
+                })
         }
     }
 }

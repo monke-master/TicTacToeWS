@@ -8,25 +8,25 @@ import ui.game.GameScreen
 import ui.join.JoinGameScreen
 
 fun RootComposeBuilder.navGraph() {
-    screen(Screen.StartScreen.route) {
+    screen(NavRoute.StartNavRoute.route) {
         StartScreen()
     }
-    screen(Screen.HostGameScreen.route) {
+    screen(NavRoute.HostGameNavRoute.route) {
         HostGameScreen()
     }
-    screen(Screen.JoinGameScreen.route) {
+    screen(NavRoute.JoinGameNavRoute.route) {
         JoinGameScreen()
     }
-    screen(Screen.HostGameScreen.route) {
+    screen(NavRoute.GameNavRoute.route) {
         GameScreen()
     }
 }
 
-sealed class Screen(
+sealed class NavRoute(
     val route: String
 ) {
-    data object StartScreen: Screen("start_screen")
-    data object HostGameScreen: Screen("host_screen")
-    data object JoinGameScreen: Screen("join_screen")
-    data object GameScreen: Screen("game_screen")
+    data object StartNavRoute: NavRoute("start_screen")
+    data object HostGameNavRoute: NavRoute("host_screen")
+    data object JoinGameNavRoute: NavRoute("join_screen")
+    data object GameNavRoute: NavRoute("game_screen")
 }
