@@ -6,4 +6,6 @@
     <string name="scan_qr">Or scan QR</string>
     <string name="quit">Quit</string>
     <string name="tell_the_code">Tell the code</string>
+    <string name="player_connected">Player connected</string>
+    <string name="start">Start</string>
 </resources>

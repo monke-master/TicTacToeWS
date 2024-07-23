@@ -38,6 +38,8 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-serialization = { group = "io.ktor", name = "ktor-client-serialization", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
 logging = { module = "org.lighthousegames:logging", version.ref = "logging" }
 
 kviewmodel-core = { module = "com.adeo:kviewmodel", version.ref = "kviewmodel" }
@@ -51,7 +53,7 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
 
 [bundles]
 ktor-common = ["ktor-client-core", "ktor-client-serialization", "ktor-client-content-negotiation",
-    "ktor-client-logging", "ktor-client-ws"]
+    "ktor-client-logging", "ktor-client-ws", "ktor-serialization-kotlinx-json"]
 kviewmodel = ["kviewmodel-odyssey", "kviewmodel-core", "kviewmodel-compose"]
 odyssey = ["odyssey-core", "odyssey-compose"]
 
@@ -61,3 +63,4 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -13,19 +13,23 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun TextButton(
     modifier: Modifier = Modifier,
     text: String,
-    onClick: () -> Unit
+    backgroundColor: Color = Color.White,
+    textColor: Color = Color.Black,
+    onClick: () -> Unit,
 ) {
     Button(
         modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.White,
+            backgroundColor = backgroundColor,
+
         )
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.h4,
+            color = textColor
         )
     }
 }

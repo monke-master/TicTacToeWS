@@ -1,10 +1,10 @@
 package ui.navigation
 
-import host.HostGameScreen
 import ru.alexgladkov.odyssey.compose.extensions.screen
 import ru.alexgladkov.odyssey.compose.navigation.RootComposeBuilder
 import ui.StartScreen
 import ui.game.GameScreen
+import ui.host.HostGameScreen
 import ui.join.JoinGameScreen
 
 fun RootComposeBuilder.navGraph() {
