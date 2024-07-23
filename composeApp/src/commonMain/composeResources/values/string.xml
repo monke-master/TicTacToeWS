@@ -8,4 +8,6 @@
     <string name="tell_the_code">Tell the code</string>
     <string name="player_connected">Player connected</string>
     <string name="start">Start</string>
+    <string name="you_are_connected">You are connected</string>
+    <string name="waiting_for_host">Waiting for the host to start the game</string>
 </resources>

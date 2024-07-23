@@ -7,7 +7,7 @@ interface GameRemoteDataSource {
 
     suspend fun hostGame(): Flow<String>
 
-    suspend fun joinGame(code: String): Result<Unit>
+    suspend fun joinGame(code: String): Flow<String>
 
     suspend fun closeConnection()
 

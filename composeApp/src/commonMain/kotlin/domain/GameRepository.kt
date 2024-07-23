@@ -7,6 +7,8 @@ interface GameRepository {
 
     suspend fun createGame(): Result<Flow<GameSession?>>
 
+    suspend fun joinGame(code: String): Result<Flow<GameSession?>>
+
     suspend fun getSessionFlow(): Flow<GameSession?>
 
     suspend fun sendGameSessionData(gameSession: GameSession): Result<Unit>

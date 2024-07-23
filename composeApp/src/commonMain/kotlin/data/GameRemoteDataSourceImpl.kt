@@ -44,8 +44,16 @@ class GameRemoteDataSourceImpl(
         return sessionFlow
     }
 
-    override suspend fun joinGame(code: String): Result<Unit> {
-        TODO("Not yet implemented")
+    override suspend fun joinGame(code: String): Flow<String> {
+        session = client.webSocketSession {
+            url("$BASE_URL/$SESSION_ENDPOINT/$code")
+        }
+
+        sessionFlow = session
+            .incoming
+            .receiveAsFlow()
+            .map { (it as Frame.Text).readText() }
+        return sessionFlow
     }
 
     override suspend fun closeConnection() {

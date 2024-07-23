@@ -49,4 +49,19 @@ class GameRepositoryImpl(
             }
         }
     }
+
+    override suspend fun joinGame(code: String): Result<Flow<GameSession?>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val flow = gameRemoteDataSource.joinGame(code)
+                return@withContext Result.success(
+                    flow.map {
+                        Json.decodeFromString<GameSession>(it)
+                    }
+                )
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
+        }
+    }
 }

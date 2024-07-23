@@ -5,6 +5,7 @@ import data.GameRemoteDataSourceImpl
 import data.GameRepositoryImpl
 import domain.GameRepository
 import domain.HostGameUseCase
+import domain.JoinGameUseCase
 import domain.StartGameUseCase
 import io.ktor.serialization.WebsocketContentConverter
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
@@ -29,6 +30,9 @@ val domainModule = module {
     }
     single {
         StartGameUseCase(get())
+    }
+    single {
+        JoinGameUseCase(get())
     }
 }
 
