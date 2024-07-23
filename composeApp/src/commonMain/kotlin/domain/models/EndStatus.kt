@@ -1,12 +1,15 @@
 package domain.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class EndStatus {
     @Serializable
-    data class Win(val player: Player): EndStatus()
+    @SerialName("win")
+    data class Win(val cellType: CellType): EndStatus()
 
     @Serializable
+    @SerialName("draw")
     data object Draw: EndStatus()
 }

@@ -4,6 +4,8 @@ import domain.models.GameSession
 
 sealed class HostGameAction {
 
+    data object StartGameScreen: HostGameAction()
+
 }
 
 sealed class HostGameEvent {

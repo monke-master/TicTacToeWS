@@ -7,6 +7,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.observeOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -19,15 +20,16 @@ class GameRepositoryImpl(
     private val gameRemoteDataSource: GameRemoteDataSource
 ): GameRepository {
 
-    private val flow = MutableStateFlow<GameSession?>(null)
+    private val sessionFlow = MutableStateFlow<GameSession?>(null)
 
-    override suspend fun createGame(): Result<Flow<GameSession>> {
+    override suspend fun createGame(): Result<Flow<GameSession?>> {
         return withContext(Dispatchers.IO) {
             try {
+                val flow = gameRemoteDataSource.hostGame()
                 return@withContext Result.success(
-                    gameRemoteDataSource
-                        .hostGame()
-                        .map { Json.decodeFromString<GameSession>(it) }
+                    flow.map {
+                        Json.decodeFromString<GameSession>(it)
+                    }
                 )
             } catch (e: Exception) {
                 return@withContext Result.failure(e)
@@ -35,7 +37,16 @@ class GameRepositoryImpl(
         }
     }
 
-    override suspend fun getSessionFlow(): Flow<GameSession?> = flow
+    override suspend fun getSessionFlow(): Flow<GameSession?> = sessionFlow
 
-
+    override suspend fun sendGameSessionData(gameSession: GameSession): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                gameRemoteDataSource.sendSessionData(gameSession)
+                return@withContext Result.success(Unit)
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
+        }
+    }
 }

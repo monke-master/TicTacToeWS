@@ -15,19 +15,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.adeo.kviewmodel.compose.observeAsState
 import com.adeo.kviewmodel.odyssey.StoredViewModel
 import domain.models.GameSession
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import ru.alexgladkov.odyssey.compose.extensions.push
 import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
 import ui.composable.DefaultBackground
 import ui.composable.LoadingPlaceholder
 import ui.composable.TextButton
+import ui.navigation.NavRoute
 import ui.theme.Green
 
 @Composable
 fun HostGameScreen() {
+    val rootController = LocalRootController.current
 
     StoredViewModel(factory = { HostGameViewModel() }) { viewModel ->
         LaunchedEffect(Unit) {
@@ -35,13 +39,23 @@ fun HostGameScreen() {
         }
 
         DefaultBackground {
-            val state = viewModel.viewStates().collectAsState()
+            val state = viewModel.viewStates().observeAsState()
+            val action = viewModel.viewActions().observeAsState()
+
+            action.value?.let { value ->
+                when (value) {
+                    HostGameAction.StartGameScreen -> rootController.push(NavRoute.GameNavRoute.route)
+                }
+            }
 
             when(val value = state.value) {
                 is HostGameState.Error -> ErrorState(value.error)
                 HostGameState.Idle -> {}
                 HostGameState.Loading -> { LoadingPlaceholder(Modifier.fillMaxSize()) }
-                is HostGameState.Success -> SuccessState(value.session)
+                is HostGameState.Success -> SuccessState(
+                    gameSession = value.session,
+                    obtainEvent = viewModel::obtainEvent
+                )
             }
         }
     }
@@ -60,7 +74,8 @@ private fun ErrorState(error: Throwable) {
 
 @Composable
 private fun SuccessState(
-    gameSession: GameSession
+    gameSession: GameSession,
+    obtainEvent: (HostGameEvent) -> Unit
 ) {
     val rootController = LocalRootController.current
     Column(
@@ -76,7 +91,7 @@ private fun SuccessState(
                 .padding(top = 42.dp)
         )
         if (gameSession.players.size > 1) {
-            StartGameBlock()
+            StartGameBlock(obtainEvent)
         } else {
             CodeInformation(gameSession)
         }
@@ -93,7 +108,9 @@ private fun SuccessState(
 }
 
 @Composable
-private fun StartGameBlock() {
+private fun StartGameBlock(
+    obtainEvent: (HostGameEvent) -> Unit
+) {
     Text(
         text = stringResource(Res.string.player_connected),
         fontSize = 24.sp,
@@ -111,7 +128,7 @@ private fun StartGameBlock() {
         backgroundColor = Green,
         textColor = Color.White,
         onClick = {
-
+            obtainEvent(HostGameEvent.StartGame)
         })
 }
 
