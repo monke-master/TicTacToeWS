@@ -27,9 +27,19 @@ import ui.navigation.NavRoute
 
 @Composable
 fun JoinGameScreen() {
+    val rootController = LocalRootController.current
+
     StoredViewModel(factory = { JoinGameViewModel() }) { viewModel ->
 
         val state = viewModel.viewStates().observeAsState()
+        val action = viewModel.viewActions().observeAsState()
+
+        action.value?.let { value ->
+            when (value) {
+                JoinGameAction.StartGameAction -> rootController.push(NavRoute.GameNavRoute.route)
+            }
+        }
+
         DefaultBackground {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

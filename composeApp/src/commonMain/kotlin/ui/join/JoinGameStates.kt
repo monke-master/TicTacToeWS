@@ -18,7 +18,7 @@ sealed class JoinGameState {
 }
 
 sealed class JoinGameAction {
-
+    data object StartGameAction: JoinGameAction()
 }
 
 sealed class JoinGameEvent {

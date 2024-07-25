@@ -2,9 +2,11 @@ package ui.join
 
 import com.adeo.kviewmodel.BaseSharedViewModel
 import domain.JoinGameUseCase
+import domain.models.GameStatus
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.lighthousegames.logging.logging
 
 class JoinGameViewModel:
     BaseSharedViewModel<JoinGameState, JoinGameAction, JoinGameEvent>(JoinGameState.Idle), KoinComponent {
@@ -29,6 +31,9 @@ class JoinGameViewModel:
             flow.collect { session ->
                 session?.let {
                     viewState = JoinGameState.Success(it)
+                    if (it.game.gameStatus == GameStatus.Started) {
+                        viewAction = JoinGameAction.StartGameAction
+                    }
                 }
             }
         }
