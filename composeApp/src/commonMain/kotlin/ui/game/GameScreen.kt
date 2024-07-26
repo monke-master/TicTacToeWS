@@ -1,6 +1,7 @@
 package ui.game
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -9,43 +10,84 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.adeo.kviewmodel.compose.observeAsState
+import com.adeo.kviewmodel.odyssey.StoredViewModel
 import domain.models.Cell
 import domain.models.CellType
 import domain.Field
+import domain.models.GameSession
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import tictactoe.composeapp.generated.resources.Res
 import tictactoe.composeapp.generated.resources.ic_cross
 import tictactoe.composeapp.generated.resources.ic_nought
+import tictactoe.composeapp.generated.resources.player_turn
+import ui.composable.ErrorPlaceholder
 import ui.composable.GradientBackground
+import ui.composable.LoadingPlaceholder
 import ui.composable.VerticalDivider
 import ui.theme.Grey
 
 @Composable
 fun GameScreen() {
-    GradientBackground {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Timer(
-                modifier = Modifier.padding(top = 72.dp),
-                time = "0:05"
-            )
-            TurnInfo(
-                modifier = Modifier.padding(top = 24.dp),
-                turnInfo = "Player 1’s Turn"
-            )
-            GameGrid(Field.flatten(), Field.size)
+
+
+    StoredViewModel({ GameViewModel() }) { viewModel ->
+        LaunchedEffect(Unit) {
+            viewModel.obtainEvent(GameScreenEvent.LoadGameData)
+        }
+        GradientBackground {
+            val state = viewModel.viewStates().observeAsState()
+
+            when (val value = state.value) {
+                is GameScreenState.Error -> ErrorPlaceholder(value.error)
+                GameScreenState.Idle -> {}
+                GameScreenState.Loading -> LoadingPlaceholder(Modifier.fillMaxSize())
+                is GameScreenState.Success ->
+                    SuccessState(
+                        gameSession = value.gameSession,
+                        isPlayerTurn = value.isPlayerTurn,
+                        obtainEvent = viewModel::obtainEvent
+                    )
+            }
         }
     }
-    
+
+}
+
+@Composable
+private fun SuccessState(
+    gameSession: GameSession,
+    isPlayerTurn: Boolean,
+    obtainEvent: (GameScreenEvent) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Timer(
+            modifier = Modifier.padding(top = 72.dp),
+            time = "0:05"
+        )
+        TurnInfo(
+            modifier = Modifier.padding(top = 24.dp),
+            turnInfo = stringResource(Res.string.player_turn, (gameSession.game.turn.playerId))
+        )
+        GameGrid(
+            cells = gameSession.game.field.flatten(),
+            columns = gameSession.game.field.size,
+            isPlayerTurn = isPlayerTurn,
+            obtainEvent = obtainEvent
+        )
+    }
 }
 
 @Composable
@@ -85,7 +127,9 @@ private fun TurnInfo(
 @Composable
 private fun GameGrid(
     cells: List<Cell>,
-    columns: Int
+    columns: Int,
+    isPlayerTurn: Boolean,
+    obtainEvent: (GameScreenEvent) -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(20.dp),
@@ -99,7 +143,9 @@ private fun GameGrid(
                 CellItem(
                     cell = cells[index],
                     index = index,
-                    onClicked = {index -> },
+                    onClicked = { index ->
+                        if (isPlayerTurn) obtainEvent(GameScreenEvent.OnCellClicked(index))
+                    },
                     showHorizontalDivider = index / columns < columns - 1,
                     showVerticalDivider =  (index + 1) % columns != 0,
                 )
@@ -117,13 +163,15 @@ private fun CellItem(
     onClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(
+        modifier = Modifier.clickable { onClicked(index) }
+    ) {
         Row(
             modifier = Modifier.height(90.dp)
         ) {
             when (cell.type) {
-                CellType.Nought -> CellImage(Res.drawable.ic_nought, modifier)
-                CellType.Cross -> CellImage(Res.drawable.ic_cross, modifier)
+                CellType.Nought -> CellImage(Res.drawable.ic_nought, modifier.weight(1f))
+                CellType.Cross -> CellImage(Res.drawable.ic_cross, modifier.weight(1f))
                 null -> Box(modifier = modifier.weight(1f)) {}
             }
             if (showVerticalDivider) {

@@ -1,11 +1,16 @@
 package di
 
+import data.GameLocalDataSource
+import data.GameLocalDataSourceImpl
 import data.GameRemoteDataSource
 import data.GameRemoteDataSourceImpl
 import data.GameRepositoryImpl
+import domain.CheckPlayerTurnUseCase
 import domain.GameRepository
+import domain.GetGameSessionUseCase
 import domain.HostGameUseCase
 import domain.JoinGameUseCase
+import domain.MakeTurnUseCase
 import domain.StartGameUseCase
 import io.ktor.serialization.WebsocketContentConverter
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
@@ -19,8 +24,11 @@ val dataModule = module {
     single<GameRemoteDataSource> {
         GameRemoteDataSourceImpl(get())
     }
+    single<GameLocalDataSource> {
+        GameLocalDataSourceImpl()
+    }
     single<GameRepository> {
-        GameRepositoryImpl(get())
+        GameRepositoryImpl(get(), get())
     }
 }
 
@@ -33,6 +41,15 @@ val domainModule = module {
     }
     single {
         JoinGameUseCase(get())
+    }
+    single {
+        CheckPlayerTurnUseCase(get())
+    }
+    single {
+        GetGameSessionUseCase(get())
+    }
+    single {
+        MakeTurnUseCase(get())
     }
 }
 

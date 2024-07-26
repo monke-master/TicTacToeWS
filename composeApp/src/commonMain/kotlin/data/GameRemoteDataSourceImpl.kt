@@ -20,39 +20,50 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
 import io.ktor.websocket.readText
 import io.ktor.websocket.serialization.sendSerializedBase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import org.lighthousegames.logging.logging
 
 class GameRemoteDataSourceImpl(
     private val serializer: WebsocketContentConverter
 ): GameRemoteDataSource {
 
     private lateinit var session: WebSocketSession
-    private lateinit var sessionFlow: Flow<String>
+    private val sessionFlow = MutableStateFlow<String?>(null)
 
-    override suspend fun hostGame(): Flow<String> {
+
+    override suspend fun hostGame(): Flow<String?> {
         session = client.webSocketSession {
             url("$BASE_URL/$NEW_SESSION_ENDPOINT")
         }
-
-        sessionFlow = session
-            .incoming
-            .receiveAsFlow()
-            .map { (it as Frame.Text).readText() }
+        CoroutineScope(Dispatchers.IO).launch {
+            session.incoming
+                .receiveAsFlow()
+                .map { (it as Frame.Text).readText() }
+                .collect { sessionFlow.value = it }
+        }
         return sessionFlow
     }
 
-    override suspend fun joinGame(code: String): Flow<String> {
+    override suspend fun joinGame(code: String): Flow<String?> {
         session = client.webSocketSession {
             url("$BASE_URL/$SESSION_ENDPOINT/$code")
         }
 
-        sessionFlow = session
-            .incoming
-            .receiveAsFlow()
-            .map { (it as Frame.Text).readText() }
+        CoroutineScope(Dispatchers.IO).launch {
+            session
+                .incoming
+                .receiveAsFlow()
+                .map { (it as Frame.Text).readText() }
+                .collect { sessionFlow.value = it }
+        }
         return sessionFlow
     }
 
@@ -68,6 +79,8 @@ class GameRemoteDataSourceImpl(
             charset = Charset.forName("UTF-8")
         )
     }
+
+    override suspend fun getSessionFlow(): Flow<String?> = sessionFlow
 
     private val client = HttpClient {
         install(WebSockets) {

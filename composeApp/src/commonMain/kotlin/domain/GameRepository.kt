@@ -1,6 +1,7 @@
 package domain
 
 import domain.models.GameSession
+import domain.models.Player
 import kotlinx.coroutines.flow.Flow
 
 interface GameRepository {
@@ -9,7 +10,9 @@ interface GameRepository {
 
     suspend fun joinGame(code: String): Result<Flow<GameSession?>>
 
-    suspend fun getSessionFlow(): Flow<GameSession?>
+    suspend fun getSessionFlow(): Result<Flow<GameSession?>>
 
     suspend fun sendGameSessionData(gameSession: GameSession): Result<Unit>
+
+    fun getPlayer(): Player
 }
