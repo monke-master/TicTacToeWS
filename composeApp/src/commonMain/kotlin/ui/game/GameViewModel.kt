@@ -2,8 +2,10 @@ package ui.game
 
 import com.adeo.kviewmodel.BaseSharedViewModel
 import domain.CheckPlayerTurnUseCase
+import domain.GetCurrentPlayerUseCase
 import domain.GetGameSessionUseCase
 import domain.MakeTurnUseCase
+import domain.models.GameStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,6 +20,7 @@ class GameViewModel:
     private val makeTurnUseCase: MakeTurnUseCase by inject()
     private val getGameSessionUseCase: GetGameSessionUseCase by inject()
     private val checkPlayerTurnUseCase: CheckPlayerTurnUseCase by inject()
+    private val getCurrentPlayerUseCase: GetCurrentPlayerUseCase by inject()
 
 
     override fun obtainEvent(viewEvent: GameScreenEvent) {
@@ -42,6 +45,11 @@ class GameViewModel:
                         gameSession = session,
                         isPlayerTurn = checkPlayerTurnUseCase.execute(session)
                     )
+
+                    if (session.game.gameStatus is GameStatus.End) {
+                        viewAction = GameScreenAction.ShowEndGameDialog(
+                            session.game.gameStatus.endStatus.toViewStatus(getCurrentPlayerUseCase.execute().type))
+                    }
                 }
             }
         }

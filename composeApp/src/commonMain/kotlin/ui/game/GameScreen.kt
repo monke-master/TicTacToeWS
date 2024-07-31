@@ -47,6 +47,9 @@ fun GameScreen() {
         }
         GradientBackground {
             val state = viewModel.viewStates().observeAsState()
+            val action = viewModel.viewActions().observeAsState()
+
+
 
             when (val value = state.value) {
                 is GameScreenState.Error -> ErrorPlaceholder(value.error)
@@ -58,6 +61,15 @@ fun GameScreen() {
                         isPlayerTurn = value.isPlayerTurn,
                         obtainEvent = viewModel::obtainEvent
                     )
+            }
+
+            action.value?.let {  value ->
+                when (value) {
+                    is GameScreenAction.ShowEndGameDialog -> EndGameDialog(value.status)
+                    GameScreenAction.ShowErrorMessage -> {
+
+                    }
+                }
             }
         }
     }

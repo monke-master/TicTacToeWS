@@ -7,6 +7,7 @@ import data.GameRemoteDataSourceImpl
 import data.GameRepositoryImpl
 import domain.CheckPlayerTurnUseCase
 import domain.GameRepository
+import domain.GetCurrentPlayerUseCase
 import domain.GetGameSessionUseCase
 import domain.HostGameUseCase
 import domain.JoinGameUseCase
@@ -50,6 +51,9 @@ val domainModule = module {
     }
     single {
         MakeTurnUseCase(get())
+    }
+    single {
+        GetCurrentPlayerUseCase(get())
     }
 }
 

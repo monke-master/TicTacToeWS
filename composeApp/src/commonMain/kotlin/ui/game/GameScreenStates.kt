@@ -9,9 +9,10 @@ sealed class GameScreenEvent {
 }
 
 sealed class GameScreenAction {
-    data object ShowWinMessage: GameScreenAction()
 
-    data object ShowLoseMessage: GameScreenAction()
+    data class ShowEndGameDialog(
+        val status: ViewEndGameStatus
+    ): GameScreenAction()
 
     data object ShowErrorMessage: GameScreenAction()
 }
