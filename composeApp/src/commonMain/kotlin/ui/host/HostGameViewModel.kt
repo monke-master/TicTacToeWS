@@ -1,8 +1,8 @@
 package ui.host
 
 import com.adeo.kviewmodel.BaseSharedViewModel
-import domain.HostGameUseCase
-import domain.StartGameUseCase
+import domain.usecase.HostGameUseCase
+import domain.usecase.StartGameUseCase
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

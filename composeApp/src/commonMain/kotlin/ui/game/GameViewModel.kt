@@ -1,17 +1,17 @@
 package ui.game
 
 import com.adeo.kviewmodel.BaseSharedViewModel
-import domain.CheckPlayerTurnUseCase
-import domain.GetCurrentPlayerUseCase
-import domain.GetGameSessionUseCase
-import domain.MakeTurnUseCase
+import domain.usecase.CheckPlayerTurnUseCase
+import domain.usecase.GetCurrentPlayerUseCase
+import domain.usecase.GetGameSessionUseCase
+import domain.usecase.MakeTurnUseCase
 import domain.models.GameStatus
+import domain.usecase.QuitGameUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.lighthousegames.logging.logging
 
 class GameViewModel:
     BaseSharedViewModel<GameScreenState, GameScreenAction, GameScreenEvent>(GameScreenState.Idle),
@@ -21,12 +21,14 @@ class GameViewModel:
     private val getGameSessionUseCase: GetGameSessionUseCase by inject()
     private val checkPlayerTurnUseCase: CheckPlayerTurnUseCase by inject()
     private val getCurrentPlayerUseCase: GetCurrentPlayerUseCase by inject()
+    private val quitGameUseCase: QuitGameUseCase by inject()
 
 
     override fun obtainEvent(viewEvent: GameScreenEvent) {
         when (viewEvent) {
             is GameScreenEvent.LoadGameData -> loadData()
             is GameScreenEvent.OnCellClicked -> onCellCLicked(viewEvent.index)
+            is GameScreenEvent.QuitGame -> quitGame()
         }
     }
 
@@ -74,4 +76,10 @@ class GameViewModel:
         }
     }
 
+    private fun quitGame() {
+        viewModelScope.launch {
+            quitGameUseCase.execute()
+            viewAction = GameScreenAction.QuitScreen
+        }
+    }
 }

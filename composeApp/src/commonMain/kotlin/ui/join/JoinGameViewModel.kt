@@ -1,12 +1,11 @@
 package ui.join
 
 import com.adeo.kviewmodel.BaseSharedViewModel
-import domain.JoinGameUseCase
+import domain.usecase.JoinGameUseCase
 import domain.models.GameStatus
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.lighthousegames.logging.logging
 
 class JoinGameViewModel:
     BaseSharedViewModel<JoinGameState, JoinGameAction, JoinGameEvent>(JoinGameState.Idle), KoinComponent {

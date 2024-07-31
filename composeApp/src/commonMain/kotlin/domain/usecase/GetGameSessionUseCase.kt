@@ -1,4 +1,6 @@
-package domain
+package domain.usecase
+
+import domain.GameRepository
 
 class GetGameSessionUseCase(
     private val gameRepository: GameRepository

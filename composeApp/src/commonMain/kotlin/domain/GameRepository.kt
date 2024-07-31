@@ -15,4 +15,6 @@ interface GameRepository {
     suspend fun sendGameSessionData(gameSession: GameSession): Result<Unit>
 
     fun getPlayer(): Player
+
+    suspend fun quitGame(): Result<Unit>
 }

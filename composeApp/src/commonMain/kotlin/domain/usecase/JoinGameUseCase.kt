@@ -1,4 +1,6 @@
-package domain
+package domain.usecase
+
+import domain.GameRepository
 
 class JoinGameUseCase(
     private val userRepository: GameRepository

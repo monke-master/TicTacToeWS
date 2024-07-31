@@ -5,14 +5,15 @@ import data.GameLocalDataSourceImpl
 import data.GameRemoteDataSource
 import data.GameRemoteDataSourceImpl
 import data.GameRepositoryImpl
-import domain.CheckPlayerTurnUseCase
+import domain.usecase.CheckPlayerTurnUseCase
 import domain.GameRepository
-import domain.GetCurrentPlayerUseCase
-import domain.GetGameSessionUseCase
-import domain.HostGameUseCase
-import domain.JoinGameUseCase
-import domain.MakeTurnUseCase
-import domain.StartGameUseCase
+import domain.usecase.GetCurrentPlayerUseCase
+import domain.usecase.GetGameSessionUseCase
+import domain.usecase.HostGameUseCase
+import domain.usecase.JoinGameUseCase
+import domain.usecase.MakeTurnUseCase
+import domain.usecase.QuitGameUseCase
+import domain.usecase.StartGameUseCase
 import io.ktor.serialization.WebsocketContentConverter
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import kotlinx.serialization.json.Json
@@ -54,6 +55,9 @@ val domainModule = module {
     }
     single {
         GetCurrentPlayerUseCase(get())
+    }
+    single {
+        QuitGameUseCase(get())
     }
 }
 

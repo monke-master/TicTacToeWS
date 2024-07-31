@@ -6,6 +6,7 @@ sealed class GameScreenEvent {
 
     data object LoadGameData: GameScreenEvent()
     data class OnCellClicked(val index: Int): GameScreenEvent()
+    data object QuitGame: GameScreenEvent()
 }
 
 sealed class GameScreenAction {
@@ -15,6 +16,8 @@ sealed class GameScreenAction {
     ): GameScreenAction()
 
     data object ShowErrorMessage: GameScreenAction()
+
+    data object QuitScreen: GameScreenAction()
 }
 
 sealed class GameScreenState {

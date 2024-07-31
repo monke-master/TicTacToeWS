@@ -18,6 +18,7 @@ import io.ktor.util.InternalAPI
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
+import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import io.ktor.websocket.serialization.sendSerializedBase
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,7 @@ class GameRemoteDataSourceImpl(
 ): GameRemoteDataSource {
 
     private lateinit var session: WebSocketSession
-    private val sessionFlow = MutableStateFlow<String?>(null)
+    private var sessionFlow = MutableStateFlow<String?>(null)
 
 
     override suspend fun hostGame(): Flow<String?> {
@@ -68,7 +69,8 @@ class GameRemoteDataSourceImpl(
     }
 
     override suspend fun closeConnection() {
-        TODO("Not yet implemented")
+        session.close()
+        sessionFlow = MutableStateFlow<String?>(null)
     }
 
     @OptIn(InternalAPI::class)

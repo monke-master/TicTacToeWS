@@ -78,7 +78,10 @@ class GameRepositoryImpl(
                     flow.map { data ->
                         data?.let {
                             val session = Json.decodeFromString<GameSession>(data)
-                            gameLocalDataSource.setPlayer(session.players[1])
+                            logging(TAG).d { session }
+                            if (session.players.size > 1) {
+                                gameLocalDataSource.setPlayer(session.players[1])
+                            }
                             session
                         }
                     }
@@ -90,4 +93,15 @@ class GameRepositoryImpl(
     }
 
     override fun getPlayer(): Player = gameLocalDataSource.getPlayer()
+
+    override suspend fun quitGame(): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                gameRemoteDataSource.closeConnection()
+                return@withContext Result.success(Unit)
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
+        }
+    }
 }

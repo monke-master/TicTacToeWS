@@ -1,5 +1,6 @@
-package domain
+package domain.usecase
 
+import domain.GameRepository
 import domain.models.GameSession
 import kotlinx.coroutines.flow.Flow
 

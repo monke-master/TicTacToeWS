@@ -22,12 +22,13 @@ import com.adeo.kviewmodel.compose.observeAsState
 import com.adeo.kviewmodel.odyssey.StoredViewModel
 import domain.models.Cell
 import domain.models.CellType
-import domain.Field
 import domain.models.GameSession
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import ru.alexgladkov.odyssey.compose.extensions.push
+import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.Res
 import tictactoe.composeapp.generated.resources.ic_cross
 import tictactoe.composeapp.generated.resources.ic_nought
@@ -37,10 +38,13 @@ import ui.composable.ErrorPlaceholder
 import ui.composable.GradientBackground
 import ui.composable.LoadingPlaceholder
 import ui.composable.VerticalDivider
+import ui.navigation.NavRoute
 import ui.theme.Grey
 
 @Composable
 fun GameScreen() {
+    val rootController = LocalRootController.current
+
     StoredViewModel({ GameViewModel() }) { viewModel ->
         LaunchedEffect(Unit) {
             viewModel.obtainEvent(GameScreenEvent.LoadGameData)
@@ -48,8 +52,6 @@ fun GameScreen() {
         GradientBackground {
             val state = viewModel.viewStates().observeAsState()
             val action = viewModel.viewActions().observeAsState()
-
-
 
             when (val value = state.value) {
                 is GameScreenState.Error -> ErrorPlaceholder(value.error)
@@ -65,10 +67,16 @@ fun GameScreen() {
 
             action.value?.let {  value ->
                 when (value) {
-                    is GameScreenAction.ShowEndGameDialog -> EndGameDialog(value.status)
+                    is GameScreenAction.ShowEndGameDialog -> {
+                        EndGameDialog(
+                            viewEndGameStatus = value.status,
+                            obtainEvent = viewModel::obtainEvent
+                        )
+                    }
                     GameScreenAction.ShowErrorMessage -> {
 
                     }
+                    is GameScreenAction.QuitScreen -> rootController.push(NavRoute.StartNavRoute.route)
                 }
             }
         }

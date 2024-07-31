@@ -29,7 +29,8 @@ import ui.theme.Red
 
 @Composable
 fun EndGameDialog(
-    viewEndGameStatus: ViewEndGameStatus
+    viewEndGameStatus: ViewEndGameStatus,
+    obtainEvent: (GameScreenEvent) -> Unit
 ) {
     Dialog(
         onDismissRequest = {}
@@ -52,7 +53,7 @@ fun EndGameDialog(
                     ViewEndGameStatus.Win -> WinHeader()
                     ViewEndGameStatus.Defeat -> DefeatHeader()
                 }
-                Buttons()
+                Buttons(obtainEvent)
             }
         }
     }
@@ -86,16 +87,18 @@ private fun DrawHeader() {
 }
 
 @Composable
-private fun Buttons() {
+private fun Buttons(
+    obtainEvent: (GameScreenEvent) -> Unit
+) {
     TextButton(
         modifier = Modifier.width(225.dp).padding(top = 24.dp),
         text = stringResource(Res.string.quit),
-        onClick = {}
+        onClick = { obtainEvent(GameScreenEvent.QuitGame) }
     )
 }
 
 @Composable
 @Preview
 private fun DialogPreview() {
-    EndGameDialog(ViewEndGameStatus.Draw)
+    EndGameDialog(ViewEndGameStatus.Draw, {})
 }
