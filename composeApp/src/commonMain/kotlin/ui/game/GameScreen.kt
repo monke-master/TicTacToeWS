@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adeo.kviewmodel.compose.observeAsState
@@ -30,7 +31,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import tictactoe.composeapp.generated.resources.Res
 import tictactoe.composeapp.generated.resources.ic_cross
 import tictactoe.composeapp.generated.resources.ic_nought
-import tictactoe.composeapp.generated.resources.player_turn
+import tictactoe.composeapp.generated.resources.your_opponent_turn
+import tictactoe.composeapp.generated.resources.your_turn
 import ui.composable.ErrorPlaceholder
 import ui.composable.GradientBackground
 import ui.composable.LoadingPlaceholder
@@ -39,8 +41,6 @@ import ui.theme.Grey
 
 @Composable
 fun GameScreen() {
-
-
     StoredViewModel({ GameViewModel() }) { viewModel ->
         LaunchedEffect(Unit) {
             viewModel.obtainEvent(GameScreenEvent.LoadGameData)
@@ -78,8 +78,8 @@ private fun SuccessState(
             time = "0:05"
         )
         TurnInfo(
-            modifier = Modifier.padding(top = 24.dp),
-            turnInfo = stringResource(Res.string.player_turn, (gameSession.game.turn.playerId))
+            modifier = Modifier.padding(top = 24.dp, start = 16.dp, end = 16.dp),
+            turnInfo = stringResource(if (isPlayerTurn) Res.string.your_turn else Res.string.your_opponent_turn)
         )
         GameGrid(
             cells = gameSession.game.field.flatten(),
@@ -117,10 +117,12 @@ private fun TurnInfo(
 ) {
     Text(
         text = turnInfo,
-        modifier = modifier,
-        fontSize = 36.sp,
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        fontSize = 24.sp,
         color = Color.White,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        maxLines = 1
     )
 }
 
@@ -133,7 +135,7 @@ private fun GameGrid(
 ) {
     Surface(
         shape = RoundedCornerShape(20.dp),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp, vertical = 16.dp)
     ) {
         LazyVerticalGrid(
             modifier = Modifier.padding(28.dp).fillMaxWidth(),
