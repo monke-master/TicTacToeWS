@@ -17,4 +17,6 @@ interface GameRepository {
     fun getPlayer(): Player
 
     suspend fun quitGame(): Result<Unit>
+
+    suspend fun restartGame(code: String): Result<Unit>
 }

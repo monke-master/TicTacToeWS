@@ -102,4 +102,15 @@ class GameRepositoryImpl(
             }
         }
     }
+
+    override suspend fun restartGame(code: String): Result<Unit> {
+        return withContext(Dispatchers.IO) {
+            try {
+                gameRemoteDataSource.restartGame(code)
+                return@withContext Result.success(Unit)
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
+        }
+    }
 }

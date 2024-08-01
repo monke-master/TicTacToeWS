@@ -11,6 +11,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocketSession
+import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.serialization.WebsocketContentConverter
 import io.ktor.serialization.kotlinx.json.json
@@ -83,6 +84,12 @@ class GameRemoteDataSourceImpl(
     }
 
     override suspend fun getSessionFlow(): Flow<String?> = sessionFlow
+
+    override suspend fun restartGame(code: String) {
+        client.post {
+            url("$BASE_URL_HTTP/$SESSION_ENDPOINT/$code/$RESTART_ENDPOINT")
+        }
+    }
 
     private val client = HttpClient {
         install(WebSockets) {

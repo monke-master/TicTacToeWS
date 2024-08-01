@@ -2,7 +2,6 @@ package ui.game
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -17,11 +16,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.adeo.kviewmodel.compose.observeAsState
+import com.adeo.kviewmodel.odyssey.StoredViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import ru.alexgladkov.odyssey.compose.extensions.push
+import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
-import ui.composable.GradientBackground
 import ui.composable.TextButton
+import ui.navigation.NavRoute
 import ui.theme.Blue
 import ui.theme.Green
 import ui.theme.LightBlue
@@ -30,30 +33,50 @@ import ui.theme.Red
 @Composable
 fun EndGameDialog(
     viewEndGameStatus: ViewEndGameStatus,
-    obtainEvent: (GameScreenEvent) -> Unit
 ) {
+    val rootController = LocalRootController.current
+
     Dialog(
         onDismissRequest = {}
     ) {
-        Surface(
-            modifier = Modifier
-                .background(
-                    brush = Brush.verticalGradient(listOf(LightBlue, Blue)),
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .fillMaxWidth(),
-            color = Color.Unspecified,
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(vertical = 16.dp)
+        StoredViewModel(factory = { EndGameViewModel() }) { viewModel ->
+            val viewState = viewModel.viewStates().observeAsState()
+            val viewAction = viewModel.viewActions().observeAsState()
+
+            Surface(
+                modifier = Modifier
+                    .background(
+                        brush = Brush.verticalGradient(listOf(LightBlue, Blue)),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .fillMaxWidth(),
+                color = Color.Unspecified,
             ) {
-                when (viewEndGameStatus) {
-                    ViewEndGameStatus.Draw -> DrawHeader()
-                    ViewEndGameStatus.Win -> WinHeader()
-                    ViewEndGameStatus.Defeat -> DefeatHeader()
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                ) {
+                    when (viewEndGameStatus) {
+                        ViewEndGameStatus.Draw -> DrawHeader()
+                        ViewEndGameStatus.Win -> WinHeader()
+                        ViewEndGameStatus.Defeat -> DefeatHeader()
+                    }
+
+                    when (viewState.value) {
+                        EndGameState.Idle ->
+                            RestartGameButton { viewModel.obtainEvent(EndGameEvent.RestartGame) }
+                        EndGameState.WaitingPlayer -> WaitingPlayerHeader()
+                    }
+                    QuitGameButton { viewModel.obtainEvent(EndGameEvent.QuitGame) }
                 }
-                Buttons(obtainEvent)
+            }
+
+            viewAction.value?.let {  action ->
+                when (action) {
+                    EndGameAction.QuitScreen -> rootController.push(NavRoute.StartNavRoute.route)
+                    is EndGameAction.QuitScreenWithError -> rootController.push(NavRoute.StartNavRoute.route)
+                    EndGameAction.StartGameScreen -> rootController.push(NavRoute.GameNavRoute.route)
+                }
             }
         }
     }
@@ -87,18 +110,37 @@ private fun DrawHeader() {
 }
 
 @Composable
-private fun Buttons(
-    obtainEvent: (GameScreenEvent) -> Unit
+private fun WaitingPlayerHeader() {
+    Text(
+        fontSize = 24.sp,
+        text = stringResource(Res.string.waiting_for_second_player),
+    )
+}
+
+@Composable
+private fun RestartGameButton(
+    onClicked: () -> Unit
 ) {
     TextButton(
         modifier = Modifier.width(225.dp).padding(top = 24.dp),
         text = stringResource(Res.string.quit),
-        onClick = { obtainEvent(GameScreenEvent.QuitGame) }
+        onClick = onClicked
+    )
+}
+
+@Composable
+private fun QuitGameButton(
+    onClicked: () -> Unit
+) {
+    TextButton(
+        modifier = Modifier.width(225.dp).padding(top = 24.dp),
+        text = stringResource(Res.string.quit),
+        onClick = onClicked
     )
 }
 
 @Composable
 @Preview
 private fun DialogPreview() {
-    EndGameDialog(ViewEndGameStatus.Draw, {})
+    EndGameDialog(ViewEndGameStatus.Draw)
 }

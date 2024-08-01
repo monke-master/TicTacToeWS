@@ -13,6 +13,7 @@ import domain.usecase.HostGameUseCase
 import domain.usecase.JoinGameUseCase
 import domain.usecase.MakeTurnUseCase
 import domain.usecase.QuitGameUseCase
+import domain.usecase.RestartGameUseCase
 import domain.usecase.StartGameUseCase
 import io.ktor.serialization.WebsocketContentConverter
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
@@ -58,6 +59,9 @@ val domainModule = module {
     }
     single {
         QuitGameUseCase(get())
+    }
+    single {
+        RestartGameUseCase(get())
     }
 }
 

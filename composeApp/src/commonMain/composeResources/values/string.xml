@@ -16,4 +16,5 @@
     <string name="defeat">Defeat!</string>
     <string name="draw">Draw!</string>
     <string name="victory">Victory!</string>
+    <string name="waiting_for_second_player">Waiting for second player</string>
 </resources>

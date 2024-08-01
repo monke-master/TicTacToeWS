@@ -14,4 +14,6 @@ interface GameRemoteDataSource {
     suspend fun sendSessionData(sessionData: GameSession)
 
     suspend fun getSessionFlow(): Flow<String?>
+
+    suspend fun restartGame(code: String)
 }

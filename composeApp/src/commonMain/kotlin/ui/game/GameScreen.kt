@@ -68,10 +68,7 @@ fun GameScreen() {
             action.value?.let {  value ->
                 when (value) {
                     is GameScreenAction.ShowEndGameDialog -> {
-                        EndGameDialog(
-                            viewEndGameStatus = value.status,
-                            obtainEvent = viewModel::obtainEvent
-                        )
+                        EndGameDialog(value.status)
                     }
                     GameScreenAction.ShowErrorMessage -> {
 
