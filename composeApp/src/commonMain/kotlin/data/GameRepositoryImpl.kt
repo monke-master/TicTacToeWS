@@ -3,27 +3,23 @@ package data
 import domain.GameRepository
 import domain.models.GameSession
 import domain.models.Player
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.observeOn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.lighthousegames.logging.logging
+import utils.Dispatcher
 
 private const val TAG = "GameRepositoryImpl"
 
 class GameRepositoryImpl(
     private val gameRemoteDataSource: GameRemoteDataSource,
-    private val gameLocalDataSource: GameLocalDataSource
+    private val gameLocalDataSource: GameLocalDataSource,
+    private val dispatcher: Dispatcher
 ): GameRepository {
 
     override suspend fun createGame(): Result<Flow<GameSession?>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher.IO) {
             try {
                 val flow = gameRemoteDataSource.hostGame()
                 return@withContext Result.success(
@@ -42,7 +38,7 @@ class GameRepositoryImpl(
     }
 
     override suspend fun getSessionFlow(): Result<Flow<GameSession?>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher.IO) {
             try {
                 return@withContext Result.success(
                     gameRemoteDataSource
@@ -60,7 +56,7 @@ class GameRepositoryImpl(
     }
 
     override suspend fun sendGameSessionData(gameSession: GameSession): Result<Unit> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher.IO) {
             try {
                 gameRemoteDataSource.sendSessionData(gameSession)
                 return@withContext Result.success(Unit)
@@ -71,7 +67,7 @@ class GameRepositoryImpl(
     }
 
     override suspend fun joinGame(code: String): Result<Flow<GameSession?>> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher.IO) {
             try {
                 val flow = gameRemoteDataSource.joinGame(code)
                 return@withContext Result.success(
@@ -93,7 +89,7 @@ class GameRepositoryImpl(
     override fun getPlayer(): Player = gameLocalDataSource.getPlayer()
 
     override suspend fun quitGame(): Result<Unit> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher.IO) {
             try {
                 gameRemoteDataSource.closeConnection()
                 return@withContext Result.success(Unit)
@@ -104,7 +100,7 @@ class GameRepositoryImpl(
     }
 
     override suspend fun restartGame(code: String): Result<Unit> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher.IO) {
             try {
                 gameRemoteDataSource.restartGame(code)
                 return@withContext Result.success(Unit)

@@ -19,6 +19,7 @@ import io.ktor.serialization.WebsocketContentConverter
 import io.ktor.serialization.kotlinx.KotlinxWebsocketSerializationConverter
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
+import utils.provideDispatcher
 
 val dataModule = module {
     single<WebsocketContentConverter> {
@@ -31,7 +32,11 @@ val dataModule = module {
         GameLocalDataSourceImpl()
     }
     single<GameRepository> {
-        GameRepositoryImpl(get(), get())
+        GameRepositoryImpl(
+            gameLocalDataSource = get(),
+            gameRemoteDataSource = get(),
+            dispatcher = provideDispatcher()
+        )
     }
 }
 
