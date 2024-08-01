@@ -79,9 +79,7 @@ class GameRepositoryImpl(
                         data?.let {
                             val session = Json.decodeFromString<GameSession>(data)
                             logging(TAG).d { session }
-                            if (session.players.size > 1) {
-                                gameLocalDataSource.setPlayer(session.players[1])
-                            }
+                            gameLocalDataSource.setPlayer(session.players[1])
                             session
                         }
                     }

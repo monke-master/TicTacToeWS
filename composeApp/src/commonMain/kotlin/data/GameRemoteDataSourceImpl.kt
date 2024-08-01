@@ -70,7 +70,7 @@ class GameRemoteDataSourceImpl(
 
     override suspend fun closeConnection() {
         session.close()
-        sessionFlow = MutableStateFlow<String?>(null)
+        sessionFlow = MutableStateFlow(null)
     }
 
     @OptIn(InternalAPI::class)
