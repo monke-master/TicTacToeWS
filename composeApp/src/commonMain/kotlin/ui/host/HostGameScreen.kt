@@ -1,6 +1,7 @@
 package ui.host
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +29,7 @@ import ui.composable.LoadingPlaceholder
 import ui.composable.TextButton
 import ui.navigation.NavRoute
 import ui.theme.Green
+import utils.toBitmap
 
 @Composable
 fun HostGameScreen() {
@@ -54,6 +56,7 @@ fun HostGameScreen() {
                 HostGameState.Loading -> { LoadingPlaceholder(Modifier.fillMaxSize()) }
                 is HostGameState.Success -> SuccessState(
                     gameSession = value.session,
+                    qrCode = value.qrCode,
                     obtainEvent = viewModel::obtainEvent
                 )
             }
@@ -75,6 +78,7 @@ private fun ErrorState(error: Throwable) {
 @Composable
 private fun SuccessState(
     gameSession: GameSession,
+    qrCode: ByteArray,
     obtainEvent: (HostGameEvent) -> Unit
 ) {
     val rootController = LocalRootController.current
@@ -93,7 +97,7 @@ private fun SuccessState(
         if (gameSession.players.size > 1) {
             StartGameBlock(obtainEvent)
         } else {
-            CodeInformation(gameSession)
+            CodeInformation(gameSession, qrCode)
         }
         Spacer(modifier = Modifier.weight(1f))
         TextButton(
@@ -135,7 +139,8 @@ private fun StartGameBlock(
 
 @Composable
 private fun CodeInformation(
-    gameSession: GameSession
+    gameSession: GameSession,
+    qrCode: ByteArray
 ) {
     Text(
         text = stringResource(Res.string.tell_the_code),
@@ -150,7 +155,7 @@ private fun CodeInformation(
         code = gameSession.code,
         modifier = Modifier.padding(32.dp)
     )
-    QrCode()
+    QrCode(qrCode)
 }
 
 @Composable
@@ -174,18 +179,20 @@ private fun Code(
 
 
 @Composable
-private fun QrCode() {
+private fun QrCode(
+    bytes: ByteArray
+) {
     Text(
         text = stringResource(Res.string.scan_qr),
         color = Color.White,
         fontSize = 24.sp,
         modifier = Modifier.padding(bottom = 12.dp)
     )
-    Box(
-        modifier = Modifier
-            .size(150.dp)
-            .background(Color.White)
-    ) {}
+    Image(
+        bitmap = bytes.toBitmap(),
+        contentDescription = null,
+        modifier = Modifier.size(150.dp)
+    )
 }
 
 @Preview

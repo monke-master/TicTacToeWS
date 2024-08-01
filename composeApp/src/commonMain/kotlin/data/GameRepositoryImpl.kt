@@ -109,4 +109,14 @@ class GameRepositoryImpl(
             }
         }
     }
+
+    override suspend fun generateQr(code: String): Result<ByteArray> {
+        return withContext(dispatcher.IO) {
+            try {
+                return@withContext Result.success(gameRemoteDataSource.generateQr(code))
+            } catch (e: Exception) {
+                return@withContext Result.failure(e)
+            }
+        }
+    }
 }

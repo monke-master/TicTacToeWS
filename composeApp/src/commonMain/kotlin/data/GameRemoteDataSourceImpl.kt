@@ -3,6 +3,7 @@ package data
 import domain.models.Game
 import domain.models.GameSession
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -11,6 +12,8 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.client.plugins.websocket.webSocketSession
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.url
 import io.ktor.serialization.WebsocketContentConverter
@@ -89,6 +92,13 @@ class GameRemoteDataSourceImpl(
         client.post {
             url("$BASE_URL_HTTP/$SESSION_ENDPOINT/$code/$RESTART_ENDPOINT")
         }
+    }
+
+    override suspend fun generateQr(code: String): ByteArray {
+        return client.get {
+            url("$BASE_URL_HTTP/$GENERATE_QR_ENDPOINT")
+            parameter(CODE_PARAM, code)
+        }.body()
     }
 
     private val client = HttpClient {

@@ -1,6 +1,7 @@
 package ui.host
 
 import com.adeo.kviewmodel.BaseSharedViewModel
+import domain.usecase.GenerateQrCodeUseCase
 import domain.usecase.HostGameUseCase
 import domain.usecase.StartGameUseCase
 import kotlinx.coroutines.launch
@@ -15,6 +16,7 @@ class HostGameViewModel:
 
     private val hostGameUseCase: HostGameUseCase by inject()
     private val startGameUseCase: StartGameUseCase by inject()
+    private val generateQrCodeUseCase: GenerateQrCodeUseCase by inject()
 
 
     override fun obtainEvent(viewEvent: HostGameEvent) {
@@ -30,12 +32,19 @@ class HostGameViewModel:
 
             val flow = hostGameUseCase.execute().getOrElse {
                 viewState = HostGameState.Error(it)
-                logging(TAG).d { "error" }
+
                 return@launch
             }
-            logging(TAG).d { "subscribing" }
+
             flow.collect { session ->
-                session?.let { viewState = HostGameState.Success(it) }
+                session?.let { gameSession ->
+                    val qrCode = generateQrCodeUseCase.execute(gameSession.code).getOrElse { error ->
+                        viewState = HostGameState.Error(error)
+                        return@collect
+                    }
+                    viewState = HostGameState.Success(gameSession, qrCode)
+                }
+
             }
         }
     }

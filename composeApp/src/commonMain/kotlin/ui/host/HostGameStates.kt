@@ -26,7 +26,26 @@ sealed class HostGameState {
     ): HostGameState()
 
     data class Success(
-        val session: GameSession
-    ): HostGameState()
+        val session: GameSession,
+        val qrCode: ByteArray
+    ): HostGameState() {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+
+            other as Success
+
+            if (session != other.session) return false
+            if (!qrCode.contentEquals(other.qrCode)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = session.hashCode()
+            result = 31 * result + qrCode.contentHashCode()
+            return result
+        }
+    }
 
 }

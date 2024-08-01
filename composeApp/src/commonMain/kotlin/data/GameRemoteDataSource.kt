@@ -16,4 +16,6 @@ interface GameRemoteDataSource {
     suspend fun getSessionFlow(): Flow<String?>
 
     suspend fun restartGame(code: String)
+
+    suspend fun generateQr(code: String): ByteArray
 }

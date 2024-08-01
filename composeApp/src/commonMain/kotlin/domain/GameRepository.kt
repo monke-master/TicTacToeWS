@@ -19,4 +19,6 @@ interface GameRepository {
     suspend fun quitGame(): Result<Unit>
 
     suspend fun restartGame(code: String): Result<Unit>
+
+    suspend fun generateQr(code: String): Result<ByteArray>
 }

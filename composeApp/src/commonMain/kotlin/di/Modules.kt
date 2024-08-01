@@ -7,6 +7,7 @@ import data.GameRemoteDataSourceImpl
 import data.GameRepositoryImpl
 import domain.usecase.CheckPlayerTurnUseCase
 import domain.GameRepository
+import domain.usecase.GenerateQrCodeUseCase
 import domain.usecase.GetCurrentPlayerUseCase
 import domain.usecase.GetGameSessionUseCase
 import domain.usecase.HostGameUseCase
@@ -67,6 +68,9 @@ val domainModule = module {
     }
     single {
         RestartGameUseCase(get())
+    }
+    single {
+        GenerateQrCodeUseCase(get())
     }
 }
 
