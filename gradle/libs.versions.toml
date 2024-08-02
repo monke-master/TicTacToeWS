@@ -19,9 +19,11 @@ logging = "1.5.0"
 kviewmodel = "0.14"
 odysseyCore = "1.3.61"
 koinVersion = "3.3.2"
+scanner = "0.1.5"
 zxingAndroidEmbedded = "4.3.0"
 
 [libraries]
+scanner = { module = "io.github.kalinjul.easyqrscan:scanner", version.ref = "scanner" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "core" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

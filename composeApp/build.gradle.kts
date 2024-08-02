@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.bundles.odyssey)
             implementation(libs.bundles.kviewmodel)
             implementation(libs.koin.core)
+            implementation(libs.scanner)
         }
 
         androidMain.dependencies {
