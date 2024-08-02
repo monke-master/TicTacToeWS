@@ -74,6 +74,10 @@ private fun IdleState(
         mutableStateOf("")
     }
     val rootController = LocalRootController.current
+    prepareScanner(
+        onResult = { code -> obtainEvent(JoinGameEvent.JoinGame(code)) },
+        onFailure = {}
+    )
     Column {
         Text(
             text = stringResource(Res.string.enter_code),
@@ -100,7 +104,7 @@ private fun IdleState(
                 .width(225.dp)
                 .padding(top = 32.dp),
             text = stringResource(Res.string.scan_qr)
-        ) {      }
+        ) { scanQrCode() }
         Spacer(modifier = Modifier.weight(1f))
         TextButton(
             modifier = Modifier
