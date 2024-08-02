@@ -3,7 +3,7 @@ package ui.join
 import androidx.compose.runtime.Composable
 
 @Composable
-expect fun prepareScanner(
+expect fun PrepareScanner(
     onResult: (String) -> Unit,
     onFailure: () -> Unit
 )

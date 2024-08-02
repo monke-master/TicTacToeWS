@@ -1,7 +1,6 @@
 package ui.join
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -74,7 +73,7 @@ private fun IdleState(
         mutableStateOf("")
     }
     val rootController = LocalRootController.current
-    prepareScanner(
+    PrepareScanner(
         onResult = { code -> obtainEvent(JoinGameEvent.JoinGame(code)) },
         onFailure = {}
     )
