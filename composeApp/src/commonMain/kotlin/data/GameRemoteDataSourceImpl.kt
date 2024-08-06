@@ -67,7 +67,10 @@ class GameRemoteDataSourceImpl(
                 .incoming
                 .receiveAsFlow()
                 .map { (it as Frame.Text).readText() }
-                .collect { sessionFlow.value = Json.decodeFromString<ServerResponse>(it) }
+                .collect {
+                    logging("BEBRA").d { it }
+                    sessionFlow.value = Json.decodeFromString<ServerResponse>(it)
+                }
         }
         return sessionFlow
     }

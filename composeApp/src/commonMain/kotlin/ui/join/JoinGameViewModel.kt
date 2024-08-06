@@ -18,6 +18,7 @@ class JoinGameViewModel:
     override fun obtainEvent(viewEvent: JoinGameEvent) {
         when(viewEvent) {
             is JoinGameEvent.JoinGame -> joinGame(viewEvent.code)
+            JoinGameEvent.ActionObtained -> viewAction = null
         }
     }
 

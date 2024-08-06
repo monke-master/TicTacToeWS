@@ -36,10 +36,17 @@ fun JoinGameScreen() {
 
         action.value?.let { value ->
             when (value) {
-                JoinGameAction.StartGameAction -> rootController.push(NavRoute.GameNavRoute.route)
-                JoinGameAction.ExitScreen -> rootController.popBackStack()
+                JoinGameAction.StartGameAction -> {
+                    rootController.push(NavRoute.GameNavRoute.route)
+                    viewModel.obtainEvent(JoinGameEvent.ActionObtained)
+                }
+                JoinGameAction.ExitScreen -> {
+                    rootController.popBackStack()
+                    viewModel.obtainEvent(JoinGameEvent.ActionObtained)
+                }
                 is JoinGameAction.ShowErrorDialog -> ErrorDialog(value.message, value.onDismiss)
             }
+
         }
 
         DefaultBackground {

@@ -3,8 +3,8 @@ package domain.usecase
 import domain.GameRepository
 
 class JoinGameUseCase(
-    private val userRepository: GameRepository
+    private val gameRepository: GameRepository
 ) {
 
-    suspend fun execute(code: String) = userRepository.joinGame(code)
+    suspend fun execute(code: String) = gameRepository.joinGame(code)
 }
