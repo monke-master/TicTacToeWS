@@ -1,9 +1,12 @@
 package ui.host
 
 import com.adeo.kviewmodel.BaseSharedViewModel
+import data.ServerResponse
 import domain.usecase.GenerateQrCodeUseCase
 import domain.usecase.HostGameUseCase
+import domain.usecase.OnOpponentLeftUseCase
 import domain.usecase.StartGameUseCase
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -17,6 +20,7 @@ class HostGameViewModel:
     private val hostGameUseCase: HostGameUseCase by inject()
     private val startGameUseCase: StartGameUseCase by inject()
     private val generateQrCodeUseCase: GenerateQrCodeUseCase by inject()
+    private val onOpponentLeftUseCase: OnOpponentLeftUseCase by inject()
 
 
     override fun obtainEvent(viewEvent: HostGameEvent) {
@@ -36,15 +40,23 @@ class HostGameViewModel:
                 return@launch
             }
 
-            flow.collect { session ->
-                session?.let { gameSession ->
-                    val qrCode = generateQrCodeUseCase.execute(gameSession.code).getOrElse { error ->
-                        viewState = HostGameState.Error(error)
-                        return@collect
+            flow.collect { response ->
+                if (response == null) return@collect
+                when(response) {
+                    is ServerResponse.Error -> {
+                        viewAction = HostGameAction.ShowErrorDialog(
+                            message = response.errorMessage,
+                            onDismissed = { viewAction = HostGameAction.ExitScreen }
+                        )
                     }
-                    viewState = HostGameState.Success(gameSession, qrCode)
+                    is ServerResponse.Success -> {
+                        val qrCode = generateQrCodeUseCase.execute(response.gameSession.code).getOrElse { error ->
+                            viewState = HostGameState.Error(error)
+                            return@collect
+                        }
+                        viewState = HostGameState.Success(response.gameSession, qrCode)
+                    }
                 }
-
             }
         }
     }

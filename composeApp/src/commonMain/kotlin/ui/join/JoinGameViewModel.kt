@@ -1,11 +1,14 @@
 package ui.join
 
 import com.adeo.kviewmodel.BaseSharedViewModel
+import data.ServerResponse
 import domain.usecase.JoinGameUseCase
 import domain.models.GameStatus
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.lighthousegames.logging.logging
+import ui.host.HostGameAction
 
 class JoinGameViewModel:
     BaseSharedViewModel<JoinGameState, JoinGameAction, JoinGameEvent>(JoinGameState.Idle), KoinComponent {
@@ -27,11 +30,24 @@ class JoinGameViewModel:
                 return@launch
             }
 
-            flow.collect { session ->
-                session?.let {
-                    viewState = JoinGameState.Success(it)
-                    if (it.game.gameStatus == GameStatus.Started) {
-                        viewAction = JoinGameAction.StartGameAction
+            flow.collect { response ->
+                if (response == null) return@collect
+
+                when (response) {
+                    is ServerResponse.Error -> {
+                        logging("ZZZ").d { "ZZZZ" }
+                        viewAction = JoinGameAction.ShowErrorDialog(
+                            message = response.errorMessage,
+                            onDismiss = {
+                                viewAction = JoinGameAction.ExitScreen
+                            }
+                        )
+                    }
+                    is ServerResponse.Success -> {
+                        viewState = JoinGameState.Success(response.gameSession)
+                        if (response.gameSession.game.gameStatus == GameStatus.Started) {
+                            viewAction = JoinGameAction.StartGameAction
+                        }
                     }
                 }
             }

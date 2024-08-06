@@ -13,6 +13,7 @@ import domain.usecase.GetGameSessionUseCase
 import domain.usecase.HostGameUseCase
 import domain.usecase.JoinGameUseCase
 import domain.usecase.MakeTurnUseCase
+import domain.usecase.OnOpponentLeftUseCase
 import domain.usecase.QuitGameUseCase
 import domain.usecase.RestartGameUseCase
 import domain.usecase.StartGameUseCase
@@ -71,6 +72,9 @@ val domainModule = module {
     }
     single {
         GenerateQrCodeUseCase(get())
+    }
+    single {
+        OnOpponentLeftUseCase(get())
     }
 }
 

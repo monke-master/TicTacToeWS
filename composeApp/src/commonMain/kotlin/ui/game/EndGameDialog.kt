@@ -123,7 +123,7 @@ private fun RestartGameButton(
 ) {
     TextButton(
         modifier = Modifier.width(225.dp).padding(top = 24.dp),
-        text = stringResource(Res.string.quit),
+        text = stringResource(Res.string.restart),
         onClick = onClicked
     )
 }

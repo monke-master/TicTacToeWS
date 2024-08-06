@@ -18,17 +18,16 @@ class GameRepositoryImpl(
     private val dispatcher: Dispatcher
 ): GameRepository {
 
-    override suspend fun createGame(): Result<Flow<GameSession?>> {
+    override suspend fun createGame(): Result<Flow<ServerResponse?>> {
         return withContext(dispatcher.IO) {
             try {
                 val flow = gameRemoteDataSource.hostGame()
                 return@withContext Result.success(
                     flow.map { data ->
-                        data?.let {
-                            val session = Json.decodeFromString<GameSession>(data)
-                            gameLocalDataSource.setPlayer(session.players[0])
-                            session
+                        if (data is ServerResponse.Success) {
+                            gameLocalDataSource.setPlayer(data.gameSession.players[0])
                         }
+                        data
                     }
                 )
             } catch (e: Exception) {
@@ -37,18 +36,10 @@ class GameRepositoryImpl(
         }
     }
 
-    override suspend fun getSessionFlow(): Result<Flow<GameSession?>> {
+    override suspend fun getSessionFlow(): Result<Flow<ServerResponse?>> {
         return withContext(dispatcher.IO) {
             try {
-                return@withContext Result.success(
-                    gameRemoteDataSource
-                        .getSessionFlow()
-                        .map {
-                            it?.let {
-                                Json.decodeFromString<GameSession>(it)
-                            }
-                        }
-                )
+                return@withContext Result.success(gameRemoteDataSource.getSessionFlow())
             } catch (e: Exception) {
                 return@withContext Result.failure(e)
             }
@@ -66,18 +57,16 @@ class GameRepositoryImpl(
         }
     }
 
-    override suspend fun joinGame(code: String): Result<Flow<GameSession?>> {
+    override suspend fun joinGame(code: String): Result<Flow<ServerResponse?>> {
         return withContext(dispatcher.IO) {
             try {
                 val flow = gameRemoteDataSource.joinGame(code)
                 return@withContext Result.success(
                     flow.map { data ->
-                        data?.let {
-                            val session = Json.decodeFromString<GameSession>(data)
-                            logging(TAG).d { session }
-                            gameLocalDataSource.setPlayer(session.players[1])
-                            session
+                        if (data is ServerResponse.Success) {
+                            gameLocalDataSource.setPlayer(data.gameSession.players[1])
                         }
+                        data
                     }
                 )
             } catch (e: Exception) {

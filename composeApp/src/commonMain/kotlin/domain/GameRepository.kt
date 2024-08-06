@@ -1,16 +1,17 @@
 package domain
 
+import data.ServerResponse
 import domain.models.GameSession
 import domain.models.Player
 import kotlinx.coroutines.flow.Flow
 
 interface GameRepository {
 
-    suspend fun createGame(): Result<Flow<GameSession?>>
+    suspend fun createGame(): Result<Flow<ServerResponse?>>
 
-    suspend fun joinGame(code: String): Result<Flow<GameSession?>>
+    suspend fun joinGame(code: String): Result<Flow<ServerResponse?>>
 
-    suspend fun getSessionFlow(): Result<Flow<GameSession?>>
+    suspend fun getSessionFlow(): Result<Flow<ServerResponse?>>
 
     suspend fun sendGameSessionData(gameSession: GameSession): Result<Unit>
 

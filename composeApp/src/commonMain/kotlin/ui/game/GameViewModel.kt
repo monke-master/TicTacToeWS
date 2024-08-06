@@ -1,6 +1,7 @@
 package ui.game
 
 import com.adeo.kviewmodel.BaseSharedViewModel
+import data.ServerResponse
 import domain.usecase.CheckPlayerTurnUseCase
 import domain.usecase.GetCurrentPlayerUseCase
 import domain.usecase.GetGameSessionUseCase
@@ -41,16 +42,21 @@ class GameViewModel:
                 return@launch
             }
 
-            flow.collect { session ->
-                session?.let { session ->
-                    viewState = GameScreenState.Success(
-                        gameSession = session,
-                        isPlayerTurn = checkPlayerTurnUseCase.execute(session)
-                    )
+            flow.collect { response ->
+                if (response == null) return@collect
 
-                    if (session.game.gameStatus is GameStatus.End) {
-                        viewAction = GameScreenAction.ShowEndGameDialog(
-                            session.game.gameStatus.endStatus.toViewStatus(getCurrentPlayerUseCase.execute().type))
+                when (response) {
+                    is ServerResponse.Error -> {}
+                    is ServerResponse.Success -> {
+                        viewState = GameScreenState.Success(
+                            gameSession = response.gameSession,
+                            isPlayerTurn = checkPlayerTurnUseCase.execute(response.gameSession)
+                        )
+
+                        if (response.gameSession.game.gameStatus is GameStatus.End) {
+                            viewAction = GameScreenAction.ShowEndGameDialog(
+                                response.gameSession.game.gameStatus.endStatus.toViewStatus(getCurrentPlayerUseCase.execute().type))
+                        }
                     }
                 }
             }

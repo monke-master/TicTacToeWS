@@ -18,6 +18,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alexgladkov.odyssey.compose.extensions.push
 import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
+import ui.ErrorDialog
 import ui.composable.DefaultBackground
 import ui.composable.ErrorPlaceholder
 import ui.composable.LoadingPlaceholder
@@ -36,6 +37,8 @@ fun JoinGameScreen() {
         action.value?.let { value ->
             when (value) {
                 JoinGameAction.StartGameAction -> rootController.push(NavRoute.GameNavRoute.route)
+                JoinGameAction.ExitScreen -> rootController.popBackStack()
+                is JoinGameAction.ShowErrorDialog -> ErrorDialog(value.message, value.onDismiss)
             }
         }
 

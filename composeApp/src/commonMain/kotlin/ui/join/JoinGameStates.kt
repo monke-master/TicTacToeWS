@@ -18,7 +18,15 @@ sealed class JoinGameState {
 }
 
 sealed class JoinGameAction {
+
     data object StartGameAction: JoinGameAction()
+
+    data class ShowErrorDialog(
+        val message: String,
+        val onDismiss: () -> Unit
+    ): JoinGameAction()
+
+    data object ExitScreen: JoinGameAction()
 }
 
 sealed class JoinGameEvent {

@@ -41,10 +41,10 @@ class GameRemoteDataSourceImpl(
 ): GameRemoteDataSource {
 
     private lateinit var session: WebSocketSession
-    private var sessionFlow = MutableStateFlow<String?>(null)
+    private var sessionFlow = MutableStateFlow<ServerResponse?>(null)
 
 
-    override suspend fun hostGame(): Flow<String?> {
+    override suspend fun hostGame(): Flow<ServerResponse?> {
         session = client.webSocketSession {
             url("$BASE_URL/$NEW_SESSION_ENDPOINT")
         }
@@ -52,12 +52,12 @@ class GameRemoteDataSourceImpl(
             session.incoming
                 .receiveAsFlow()
                 .map { (it as Frame.Text).readText() }
-                .collect { sessionFlow.value = it }
+                .collect { sessionFlow.value = Json.decodeFromString<ServerResponse>(it) }
         }
         return sessionFlow
     }
 
-    override suspend fun joinGame(code: String): Flow<String?> {
+    override suspend fun joinGame(code: String): Flow<ServerResponse?> {
         session = client.webSocketSession {
             url("$BASE_URL/$SESSION_ENDPOINT/$code")
         }
@@ -67,7 +67,7 @@ class GameRemoteDataSourceImpl(
                 .incoming
                 .receiveAsFlow()
                 .map { (it as Frame.Text).readText() }
-                .collect { sessionFlow.value = it }
+                .collect { sessionFlow.value = Json.decodeFromString<ServerResponse>(it) }
         }
         return sessionFlow
     }
@@ -86,7 +86,7 @@ class GameRemoteDataSourceImpl(
         )
     }
 
-    override suspend fun getSessionFlow(): Flow<String?> = sessionFlow
+    override suspend fun getSessionFlow(): Flow<ServerResponse?> = sessionFlow
 
     override suspend fun restartGame(code: String) {
         client.post {

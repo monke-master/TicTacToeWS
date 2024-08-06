@@ -5,15 +5,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface GameRemoteDataSource {
 
-    suspend fun hostGame(): Flow<String?>
+    suspend fun hostGame(): Flow<ServerResponse?>
 
-    suspend fun joinGame(code: String): Flow<String?>
+    suspend fun joinGame(code: String): Flow<ServerResponse?>
 
     suspend fun closeConnection()
 
     suspend fun sendSessionData(sessionData: GameSession)
 
-    suspend fun getSessionFlow(): Flow<String?>
+    suspend fun getSessionFlow(): Flow<ServerResponse?>
 
     suspend fun restartGame(code: String)
 

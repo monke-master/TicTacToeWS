@@ -17,4 +17,6 @@
     <string name="draw">Draw!</string>
     <string name="victory">Victory!</string>
     <string name="waiting_for_second_player">Waiting for second player</string>
+    <string name="restart">Restart</string>
+    <string name="ok">OK</string>
 </resources>

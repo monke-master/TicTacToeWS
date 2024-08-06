@@ -1,6 +1,7 @@
 package ui.game
 
 import com.adeo.kviewmodel.BaseSharedViewModel
+import data.ServerResponse
 import domain.models.GameStatus
 import domain.usecase.GetGameSessionUseCase
 import domain.usecase.QuitGameUseCase
@@ -42,20 +43,32 @@ class EndGameViewModel:
                 viewAction = EndGameAction.QuitScreenWithError(it)
                 return@launch
             }
-            val session = flow.first() ?: return@launch
-            restartGameUseCase.execute(session).onFailure {
-                viewAction = EndGameAction.QuitScreenWithError(it)
+            val response = flow.first() ?: return@launch
+
+            if (response is ServerResponse.Success) {
+                restartGameUseCase.execute(response.gameSession).onFailure {
+                    viewAction = EndGameAction.QuitScreenWithError(it)
+                    return@launch
+                }
+            } else {
                 return@launch
             }
 
+
             viewState = EndGameState.WaitingPlayer
 
-            flow.collect { session ->
-                session?.let {
-                    if (session.game.gameStatus == GameStatus.Started) {
-                        viewAction = EndGameAction.StartGameScreen
+            flow.collect { response ->
+                if (response == null) return@collect
+
+                when (response) {
+                    is ServerResponse.Error -> {}
+                    is ServerResponse.Success -> {
+                        if (response.gameSession.game.gameStatus == GameStatus.Started) {
+                            viewAction = EndGameAction.StartGameScreen
+                        }
                     }
                 }
+
             }
         }
     }

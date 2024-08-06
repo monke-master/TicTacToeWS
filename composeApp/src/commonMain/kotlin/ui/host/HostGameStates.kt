@@ -6,6 +6,12 @@ sealed class HostGameAction {
 
     data object StartGameScreen: HostGameAction()
 
+    data class ShowErrorDialog(
+        val message: String,
+        val onDismissed: () -> Unit
+    ): HostGameAction()
+
+    data object ExitScreen: HostGameAction()
 }
 
 sealed class HostGameEvent {
