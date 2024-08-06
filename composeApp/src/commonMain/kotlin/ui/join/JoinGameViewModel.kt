@@ -4,6 +4,7 @@ import com.adeo.kviewmodel.BaseSharedViewModel
 import data.ServerResponse
 import domain.usecase.JoinGameUseCase
 import domain.models.GameStatus
+import domain.usecase.QuitGameUseCase
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -14,6 +15,7 @@ class JoinGameViewModel:
     BaseSharedViewModel<JoinGameState, JoinGameAction, JoinGameEvent>(JoinGameState.Idle), KoinComponent {
 
     private val joinGameUseCase: JoinGameUseCase by inject()
+    private val quitGameUseCase: QuitGameUseCase by inject()
 
     override fun obtainEvent(viewEvent: JoinGameEvent) {
         when(viewEvent) {
@@ -36,13 +38,13 @@ class JoinGameViewModel:
 
                 when (response) {
                     is ServerResponse.Error -> {
-                        logging("ZZZ").d { "ZZZZ" }
                         viewAction = JoinGameAction.ShowErrorDialog(
                             message = response.errorMessage,
                             onDismiss = {
                                 viewAction = JoinGameAction.ExitScreen
                             }
                         )
+                        quitGameUseCase.execute()
                     }
                     is ServerResponse.Success -> {
                         viewState = JoinGameState.Success(response.gameSession)
