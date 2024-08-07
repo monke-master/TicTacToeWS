@@ -27,6 +27,7 @@ import ui.composable.DefaultBackground
 import ui.composable.LoadingPlaceholder
 import ui.composable.TextButton
 import ui.navigation.NavRoute
+import ui.navigation.registerOnBackCallback
 import ui.theme.Green
 import utils.toBitmap
 
@@ -37,6 +38,11 @@ fun HostGameScreen() {
     StoredViewModel(factory = { HostGameViewModel() }) { viewModel ->
         LaunchedEffect(Unit) {
             viewModel.obtainEvent(HostGameEvent.CreateGame)
+        }
+
+        registerOnBackCallback {
+            viewModel.obtainEvent(HostGameEvent.QuitGame)
+            rootController.popBackStack()
         }
 
         DefaultBackground {
@@ -107,6 +113,7 @@ private fun SuccessState(
                 .padding(bottom = 32.dp),
             text = stringResource(Res.string.quit),
             onClick = {
+                obtainEvent(HostGameEvent.QuitGame)
                 rootController.popBackStack()
             })
     }

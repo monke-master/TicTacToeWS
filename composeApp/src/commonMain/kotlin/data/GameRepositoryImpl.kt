@@ -24,6 +24,7 @@ class GameRepositoryImpl(
                 val flow = gameRemoteDataSource.hostGame()
                 return@withContext Result.success(
                     flow.map { data ->
+                        logging(TAG).d { "Hosting: $data" }
                         if (data is ServerResponse.Success) {
                             gameLocalDataSource.setPlayer(data.gameSession.players[0])
                         }
@@ -63,6 +64,7 @@ class GameRepositoryImpl(
                 val flow = gameRemoteDataSource.joinGame(code)
                 return@withContext Result.success(
                     flow.map { data ->
+                        logging(TAG).d { "Joining: $data" }
                         if (data is ServerResponse.Success) {
                             gameLocalDataSource.setPlayer(data.gameSession.players[1])
                         }

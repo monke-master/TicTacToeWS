@@ -8,8 +8,6 @@ import domain.usecase.QuitGameUseCase
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.lighthousegames.logging.logging
-import ui.host.HostGameAction
 
 class JoinGameViewModel:
     BaseSharedViewModel<JoinGameState, JoinGameAction, JoinGameEvent>(JoinGameState.Idle), KoinComponent {
@@ -21,6 +19,7 @@ class JoinGameViewModel:
         when(viewEvent) {
             is JoinGameEvent.JoinGame -> joinGame(viewEvent.code)
             JoinGameEvent.ActionObtained -> viewAction = null
+            JoinGameEvent.QuitGame -> quitGame()
         }
     }
 
@@ -54,6 +53,12 @@ class JoinGameViewModel:
                     }
                 }
             }
+        }
+    }
+
+    private fun quitGame() {
+        viewModelScope.launch {
+            quitGameUseCase.execute()
         }
     }
 

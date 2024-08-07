@@ -5,6 +5,7 @@ import data.ServerResponse
 import domain.usecase.GenerateQrCodeUseCase
 import domain.usecase.HostGameUseCase
 import domain.usecase.OnOpponentLeftUseCase
+import domain.usecase.QuitGameUseCase
 import domain.usecase.StartGameUseCase
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -20,13 +21,14 @@ class HostGameViewModel:
     private val hostGameUseCase: HostGameUseCase by inject()
     private val startGameUseCase: StartGameUseCase by inject()
     private val generateQrCodeUseCase: GenerateQrCodeUseCase by inject()
-    private val onOpponentLeftUseCase: OnOpponentLeftUseCase by inject()
+    private val quitGameUseCase: QuitGameUseCase by inject()
 
 
     override fun obtainEvent(viewEvent: HostGameEvent) {
         when (viewEvent) {
             HostGameEvent.CreateGame -> createGame()
             HostGameEvent.StartGame -> startGame()
+            HostGameEvent.QuitGame -> quitGame()
         }
     }
 
@@ -48,6 +50,7 @@ class HostGameViewModel:
                             message = response.errorMessage,
                             onDismissed = { viewAction = HostGameAction.ExitScreen }
                         )
+                        quitGameUseCase.execute()
                     }
                     is ServerResponse.Success -> {
                         val qrCode = generateQrCodeUseCase.execute(response.gameSession.code).getOrElse { error ->
@@ -71,6 +74,12 @@ class HostGameViewModel:
             }
 
             viewAction = HostGameAction.StartGameScreen
+        }
+    }
+
+    private fun quitGame() {
+        viewModelScope.launch {
+            quitGameUseCase.execute()
         }
     }
 

@@ -24,6 +24,7 @@ import ui.composable.ErrorPlaceholder
 import ui.composable.LoadingPlaceholder
 import ui.composable.TextButton
 import ui.navigation.NavRoute
+import ui.navigation.registerOnBackCallback
 
 @Composable
 fun JoinGameScreen() {
@@ -67,7 +68,7 @@ fun JoinGameScreen() {
                     is JoinGameState.Error -> ErrorPlaceholder(value.error)
                     JoinGameState.Idle -> IdleState(obtainEvent = viewModel::obtainEvent)
                     JoinGameState.Loading -> LoadingPlaceholder(Modifier.fillMaxSize())
-                    is JoinGameState.Success -> SuccessState()
+                    is JoinGameState.Success -> SuccessState(viewModel::obtainEvent)
                 }
             }
 
@@ -79,11 +80,14 @@ fun JoinGameScreen() {
 private fun IdleState(
     obtainEvent: (JoinGameEvent) -> Unit
 ) {
+    val rootController = LocalRootController.current
     var input by remember {
         mutableStateOf("")
     }
-    val rootController = LocalRootController.current
-    Column {
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = stringResource(Res.string.enter_code),
             fontSize = 24.sp,
@@ -137,25 +141,49 @@ private fun IdleState(
 }
 
 @Composable
-private fun SuccessState() {
-    Text(
-        text = stringResource(Res.string.you_are_connected),
-        fontSize = 24.sp,
-        color = Color.White,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    )
-    Text(
-        text = stringResource(Res.string.waiting_for_host),
-        fontSize = 24.sp,
-        color = Color.White,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    )
+private fun SuccessState(
+    obtainEvent: (JoinGameEvent) -> Unit
+) {
+    val rootController = LocalRootController.current
+
+    registerOnBackCallback {
+        obtainEvent(JoinGameEvent.QuitGame)
+        rootController.popBackStack()
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(Res.string.you_are_connected),
+            fontSize = 24.sp,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        )
+        Text(
+            text = stringResource(Res.string.waiting_for_host),
+            fontSize = 24.sp,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        TextButton(
+            modifier = Modifier
+                .width(225.dp)
+                .padding(bottom = 32.dp),
+            text = stringResource(Res.string.quit),
+            onClick = {
+                obtainEvent(JoinGameEvent.QuitGame)
+                rootController.popBackStack()
+            }
+        )
+    }
 }
 
 @Composable

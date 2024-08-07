@@ -32,5 +32,8 @@ sealed class JoinGameAction {
 sealed class JoinGameEvent {
 
     data class JoinGame(val code: String): JoinGameEvent()
+
     data object ActionObtained: JoinGameEvent()
+
+    data object QuitGame: JoinGameEvent()
 }

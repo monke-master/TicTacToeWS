@@ -20,6 +20,8 @@ sealed class HostGameEvent {
 
     data object StartGame: HostGameEvent()
 
+    data object QuitGame: HostGameEvent()
+
 }
 
 sealed class HostGameState {
