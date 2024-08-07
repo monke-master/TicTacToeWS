@@ -2,14 +2,12 @@ package ui.host
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +22,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alexgladkov.odyssey.compose.extensions.push
 import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
-import ui.ErrorDialog
+import ui.composable.ErrorDialog
 import ui.composable.DefaultBackground
 import ui.composable.LoadingPlaceholder
 import ui.composable.TextButton

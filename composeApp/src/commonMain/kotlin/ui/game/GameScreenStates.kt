@@ -18,6 +18,11 @@ sealed class GameScreenAction {
     data object ShowErrorMessage: GameScreenAction()
 
     data object QuitScreen: GameScreenAction()
+
+    data class ShowErrorDialog(
+        val errorMessage: String,
+        val onDismiss: () -> Unit
+    ): GameScreenAction()
 }
 
 sealed class GameScreenState {

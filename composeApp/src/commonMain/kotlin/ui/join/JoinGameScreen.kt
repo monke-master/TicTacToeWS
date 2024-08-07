@@ -18,7 +18,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.alexgladkov.odyssey.compose.extensions.push
 import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
-import ui.ErrorDialog
+import ui.composable.ErrorDialog
 import ui.composable.DefaultBackground
 import ui.composable.ErrorPlaceholder
 import ui.composable.LoadingPlaceholder

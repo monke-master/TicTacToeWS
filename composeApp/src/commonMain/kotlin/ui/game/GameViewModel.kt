@@ -46,7 +46,12 @@ class GameViewModel:
                 if (response == null) return@collect
 
                 when (response) {
-                    is ServerResponse.Error -> {}
+                    is ServerResponse.Error -> {
+                        viewAction = GameScreenAction.ShowErrorDialog(
+                            errorMessage = response.errorMessage,
+                            onDismiss = { viewAction = GameScreenAction.QuitScreen }
+                        )
+                    }
                     is ServerResponse.Success -> {
                         viewState = GameScreenState.Success(
                             gameSession = response.gameSession,

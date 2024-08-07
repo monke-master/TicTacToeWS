@@ -11,6 +11,10 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,23 +36,48 @@ import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.Res
 import tictactoe.composeapp.generated.resources.ic_cross
 import tictactoe.composeapp.generated.resources.ic_nought
+import tictactoe.composeapp.generated.resources.sure_to_quit
 import tictactoe.composeapp.generated.resources.your_opponent_turn
 import tictactoe.composeapp.generated.resources.your_turn
+import ui.composable.AlertDialog
+import ui.composable.ErrorDialog
 import ui.composable.ErrorPlaceholder
 import ui.composable.GradientBackground
 import ui.composable.LoadingPlaceholder
 import ui.composable.VerticalDivider
 import ui.navigation.NavRoute
+import ui.navigation.registerOnBackCallback
 import ui.theme.Grey
 
 @Composable
 fun GameScreen() {
     val rootController = LocalRootController.current
 
+    var isDialogShowed by remember {
+        mutableStateOf(false)
+    }
+
     StoredViewModel({ GameViewModel() }) { viewModel ->
         LaunchedEffect(Unit) {
             viewModel.obtainEvent(GameScreenEvent.LoadGameData)
         }
+
+        AlertDialog(
+            isDialogShowed,
+            stringResource(Res.string.sure_to_quit),
+            onDismissed = {
+                isDialogShowed = false
+            },
+            onYesBtnClicked = {
+                viewModel.obtainEvent(GameScreenEvent.QuitGame)
+                rootController.popBackStack()
+            }
+        )
+
+        registerOnBackCallback {
+            isDialogShowed = true
+        }
+
         GradientBackground {
             val state = viewModel.viewStates().observeAsState()
             val action = viewModel.viewActions().observeAsState()
@@ -74,6 +103,9 @@ fun GameScreen() {
 
                     }
                     is GameScreenAction.QuitScreen -> rootController.push(NavRoute.StartNavRoute.route)
+                    is GameScreenAction.ShowErrorDialog -> {
+                        ErrorDialog(value.errorMessage, value.onDismiss)
+                    }
                 }
             }
         }
