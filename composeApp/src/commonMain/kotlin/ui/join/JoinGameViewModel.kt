@@ -14,17 +14,20 @@ class JoinGameViewModel:
 
     private val joinGameUseCase: JoinGameUseCase by inject()
     private val quitGameUseCase: QuitGameUseCase by inject()
+    private var code: String? = null
 
     override fun obtainEvent(viewEvent: JoinGameEvent) {
         when(viewEvent) {
             is JoinGameEvent.JoinGame -> joinGame(viewEvent.code)
             JoinGameEvent.ActionObtained -> viewAction = null
             JoinGameEvent.QuitGame -> quitGame()
+            JoinGameEvent.RetryJoin -> code?.let { joinGame(it) }
         }
     }
 
     private fun joinGame(code: String) {
         viewModelScope.launch {
+            this@JoinGameViewModel.code = code
             viewState = JoinGameState.Loading
 
             val flow = joinGameUseCase.execute(code).getOrElse {

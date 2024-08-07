@@ -2,11 +2,13 @@ package ui.host
 
 import com.adeo.kviewmodel.BaseSharedViewModel
 import data.ServerResponse
+import domain.models.GameSession
 import domain.usecase.GenerateQrCodeUseCase
 import domain.usecase.HostGameUseCase
 import domain.usecase.OnOpponentLeftUseCase
 import domain.usecase.QuitGameUseCase
 import domain.usecase.StartGameUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -22,17 +24,20 @@ class HostGameViewModel:
     private val startGameUseCase: StartGameUseCase by inject()
     private val generateQrCodeUseCase: GenerateQrCodeUseCase by inject()
     private val quitGameUseCase: QuitGameUseCase by inject()
+    private var lastRequest: (() -> Job)? = null
+    private var session: GameSession? = null
 
 
     override fun obtainEvent(viewEvent: HostGameEvent) {
         when (viewEvent) {
-            HostGameEvent.CreateGame -> createGame()
-            HostGameEvent.StartGame -> startGame()
+            HostGameEvent.CreateGame -> lastRequest = createGame().apply { invoke() }
+            HostGameEvent.StartGame -> lastRequest = startGame().apply { invoke() }
             HostGameEvent.QuitGame -> quitGame()
+            HostGameEvent.RetryRequest -> lastRequest?.invoke()
         }
     }
 
-    private fun createGame() {
+    private fun createGame(): () -> Job = {
         viewModelScope.launch {
             viewState = HostGameState.Loading
 
@@ -58,15 +63,16 @@ class HostGameViewModel:
                             return@collect
                         }
                         viewState = HostGameState.Success(response.gameSession, qrCode)
+                        session = response.gameSession
                     }
                 }
             }
         }
     }
 
-    private fun startGame() {
+    private fun startGame(): () -> Job = {
         viewModelScope.launch {
-            val gameSession = (viewState as HostGameState.Success).session
+            val gameSession = session ?: return@launch
 
             startGameUseCase.execute(gameSession).getOrElse {
                 viewState = HostGameState.Error(it)

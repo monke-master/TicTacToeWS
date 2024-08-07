@@ -36,4 +36,6 @@ sealed class JoinGameEvent {
     data object ActionObtained: JoinGameEvent()
 
     data object QuitGame: JoinGameEvent()
+
+    data object RetryJoin: JoinGameEvent()
 }

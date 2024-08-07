@@ -65,7 +65,11 @@ fun JoinGameScreen() {
                         .padding(top = 42.dp)
                 )
                 when (val value = state.value) {
-                    is JoinGameState.Error -> ErrorPlaceholder(value.error)
+                    is JoinGameState.Error ->
+                        ErrorPlaceholder(
+                            error = value.error,
+                            onTryAgain = { viewModel.obtainEvent(JoinGameEvent.RetryJoin) }
+                        )
                     JoinGameState.Idle -> IdleState(obtainEvent = viewModel::obtainEvent)
                     JoinGameState.Loading -> LoadingPlaceholder(Modifier.fillMaxSize())
                     is JoinGameState.Success -> SuccessState(viewModel::obtainEvent)

@@ -83,7 +83,7 @@ fun GameScreen() {
             val action = viewModel.viewActions().observeAsState()
 
             when (val value = state.value) {
-                is GameScreenState.Error -> ErrorPlaceholder(value.error)
+                is GameScreenState.Error -> ErrorPlaceholder(value.error) {}
                 GameScreenState.Idle -> {}
                 GameScreenState.Loading -> LoadingPlaceholder(Modifier.fillMaxSize())
                 is GameScreenState.Success ->

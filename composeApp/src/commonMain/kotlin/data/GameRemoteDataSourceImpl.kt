@@ -48,11 +48,15 @@ class GameRemoteDataSourceImpl(
         session = client.webSocketSession {
             url("$BASE_URL/$NEW_SESSION_ENDPOINT")
         }
+
         CoroutineScope(Dispatchers.IO).launch {
-            session.incoming
-                .receiveAsFlow()
-                .map { (it as Frame.Text).readText() }
-                .collect { sessionFlow.value = Json.decodeFromString<ServerResponse>(it) }
+            try {
+                session.incoming
+                    .receiveAsFlow()
+                    .map { (it as Frame.Text).readText() }
+                    .collect { sessionFlow.value = Json.decodeFromString<ServerResponse>(it) }
+            } catch (e: Exception) {}
+
         }
         return sessionFlow
     }

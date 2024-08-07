@@ -24,6 +24,7 @@ import ru.alexgladkov.odyssey.compose.local.LocalRootController
 import tictactoe.composeapp.generated.resources.*
 import ui.composable.ErrorDialog
 import ui.composable.DefaultBackground
+import ui.composable.ErrorPlaceholder
 import ui.composable.LoadingPlaceholder
 import ui.composable.TextButton
 import ui.navigation.NavRoute
@@ -58,7 +59,11 @@ fun HostGameScreen() {
             }
 
             when(val value = state.value) {
-                is HostGameState.Error -> ErrorState(value.error)
+                is HostGameState.Error ->
+                    ErrorPlaceholder(
+                        error = value.error,
+                        onTryAgain = { viewModel.obtainEvent(HostGameEvent.RetryRequest) }
+                    )
                 HostGameState.Idle -> {}
                 HostGameState.Loading -> { LoadingPlaceholder(Modifier.fillMaxSize()) }
                 is HostGameState.Success -> SuccessState(
@@ -70,16 +75,6 @@ fun HostGameScreen() {
         }
     }
 
-}
-
-@Composable
-private fun ErrorState(error: Throwable) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = error.message ?: " ")
-    }
 }
 
 @Composable

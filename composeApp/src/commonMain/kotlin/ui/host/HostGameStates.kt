@@ -22,6 +22,8 @@ sealed class HostGameEvent {
 
     data object QuitGame: HostGameEvent()
 
+    data object RetryRequest: HostGameEvent()
+
 }
 
 sealed class HostGameState {
