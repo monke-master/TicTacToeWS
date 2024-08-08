@@ -73,6 +73,7 @@ class HostGameViewModel:
     private fun startGame(): () -> Job = {
         viewModelScope.launch {
             val gameSession = session ?: return@launch
+            viewState = HostGameState.Loading
 
             startGameUseCase.execute(gameSession).getOrElse {
                 viewState = HostGameState.Error(it)
