@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
@@ -49,14 +50,16 @@ fun ErrorPlaceholder(
         Text(
             text = stringResource(Res.string.error),
             fontSize = 36.sp,
-            color = Red
+            color = Red,
+            textAlign = TextAlign.Center
         )
         error.message?.let {
             Text(
                 modifier = Modifier.padding(top = 8.dp),
                 text = it,
                 fontSize = 28.sp,
-                color = Color.White
+                color = Color.White,
+                textAlign = TextAlign.Center
             )
         }
         TextButton(
@@ -71,9 +74,12 @@ fun ErrorPlaceholder(
 @Composable
 @Preview
 private fun ErrorPlaceholderPreview() {
-    Surface(
-        modifier = Modifier.fillMaxWidth()
+    GradientBackground(
+        
     ) {
-        ErrorPlaceholder(IndexOutOfBoundsException(), {})
+        ErrorPlaceholder(object: Throwable() {
+            override val message: String?
+                get() = "Хохлы пидорасы"
+        }, {})
     }
 }
