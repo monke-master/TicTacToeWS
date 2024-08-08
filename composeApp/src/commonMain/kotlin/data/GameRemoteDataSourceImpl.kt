@@ -60,7 +60,9 @@ class GameRemoteDataSourceImpl(
                     .receiveAsFlow()
                     .map { (it as Frame.Text).readText() }
                     .collect { sessionFlow.value = Json.decodeFromString<ServerResponse>(it) }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
         }
         return sessionFlow
@@ -73,14 +75,19 @@ class GameRemoteDataSourceImpl(
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            session
-                .incoming
-                .receiveAsFlow()
-                .map { (it as Frame.Text).readText() }
-                .collect {
-                    logging("BEBRA").d { it }
-                    sessionFlow.value = Json.decodeFromString<ServerResponse>(it)
-                }
+            try {
+                session
+                    .incoming
+                    .receiveAsFlow()
+                    .map { (it as Frame.Text).readText() }
+                    .collect {
+                        logging("BEBRA").d { it }
+                        sessionFlow.value = Json.decodeFromString<ServerResponse>(it)
+                    }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                sessionFlow.value = ServerResponse.Error(e.message ?: "Unknown error")
+            }
         }
         return sessionFlow
     }

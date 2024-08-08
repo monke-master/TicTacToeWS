@@ -27,7 +27,6 @@ class HostGameViewModel:
     private var lastRequest: (() -> Job)? = null
     private var session: GameSession? = null
 
-
     override fun obtainEvent(viewEvent: HostGameEvent) {
         when (viewEvent) {
             HostGameEvent.CreateGame -> lastRequest = createGame().apply { invoke() }
